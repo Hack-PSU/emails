@@ -1,42 +1,62 @@
-# Dockerfile for Next.js mailbox-forwarding project (uses Yarn & Node 25)
+# 1) Builder
+FROM node:24-alpine AS builder
 
-# 1) Builder stage
-FROM node:24 AS builder
+# build-time args for NEXT_PUBLIC_*
+ARG NEXT_PUBLIC_BASE_URL_V3
+ARG NEXT_PUBLIC_FIREBASE_API_KEY
+ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+ARG NEXT_PUBLIC_FIREBASE_DATABASE_URL
+ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID
+ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+ARG NEXT_PUBLIC_FIREBASE_APP_ID
 
-# Set working directory
+# expose them to your Next.js build
+ENV NEXT_PUBLIC_BASE_URL_V3=$NEXT_PUBLIC_BASE_URL_V3
+ENV NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY
+ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+ENV NEXT_PUBLIC_FIREBASE_DATABASE_URL=$NEXT_PUBLIC_FIREBASE_DATABASE_URL
+ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID
+ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
+
 WORKDIR /app
-
-# Only copy package manifests and install dependencies (cached layer)
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
-
-# Copy source code
 COPY . .
-
-# Build the Next.js app
 RUN yarn build
-
-# Install only production dependencies (omit dev deps)
 RUN yarn install --production --frozen-lockfile
 
 
-# 2) Runner stage
-FROM node:24 AS runner
-
+# 2) Runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 
-# Set environment to production
+# runtime env for Next.js
 ENV NODE_ENV=production
 
-# Copy production build and dependencies
+# re-export NEXT_PUBLIC_* at runtime (if needed by server-side code)
+ENV NEXT_PUBLIC_BASE_URL_V3=$NEXT_PUBLIC_BASE_URL_V3
+ENV NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY
+ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+ENV NEXT_PUBLIC_FIREBASE_DATABASE_URL=$NEXT_PUBLIC_FIREBASE_DATABASE_URL
+ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID
+ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
+
+# placeholders for Namecheap—expect the user to pass these at `docker run`
+ENV NAMECHEAP_API_USER=""
+ENV NAMECHEAP_API_KEY=""
+ENV NAMECHEAP_CLIENT_IP=""
+ENV NAMECHEAP_BASE_URL=""
+
+# copy over build + prod deps
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/yarn.lock ./yarn.lock
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
 
-# Expose the default Next.js port
 EXPOSE 3000
-
-# Start the Next.js server
 CMD ["yarn", "start"]
