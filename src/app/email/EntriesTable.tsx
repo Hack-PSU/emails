@@ -1,7 +1,6 @@
-// src/app/email/EntriesTable.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -25,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDownIcon, TrashIcon } from "lucide-react";
 import ForwardingDialog from "./ForwardingDialog";
+import { useAllOrganizers } from "@/common/api/organizer/hook";
 
 interface Props {
   entries: Entry[];
@@ -36,15 +36,29 @@ const defaultAddress = "hackpsudev@gmail.com";
 export default function EntriesTable({ entries, onEntriesChange }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [deleting, setDeleting] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState(false);
 
-  // Handler to delete a forwarding entry
+  const { data: organizers = [] } = useAllOrganizers();
+  const nameLookup = useMemo(() => {
+    return organizers.reduce<Record<string, string>>((acc, org) => {
+      acc[org.email] = `${org.firstName} ${org.lastName}`;
+      return acc;
+    }, {});
+  }, [organizers]);
+
+  const statusLookup = useMemo(() => {
+    return organizers.reduce<Record<string, boolean>>((acc, org) => {
+      acc[org.email] = org.isActive ? true : false;
+      return acc;
+    }, {});
+  }, [organizers]);
+
   const handleDelete = async (mailbox: string, forwardTo: string) => {
     setDeleting(true);
     try {
       await fetch(
         `/api/email?mailbox=${encodeURIComponent(mailbox)}&forwardTo=${encodeURIComponent(forwardTo)}`,
-        { method: "DELETE" },
+        { method: "DELETE" }
       );
       const res = await fetch("/api/email");
       const data = await res.json();
@@ -56,7 +70,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
     }
   };
 
-  const columns = React.useMemo<ColumnDef<Entry>[]>(
+  const columns = useMemo<ColumnDef<Entry>[]>(
     () => [
       {
         accessorKey: "mailbox",
@@ -81,7 +95,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
             size="lg"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Forward To <ArrowUpDownIcon className="ml-1 h-5 w-5" />
+            Forward To (Email) <ArrowUpDownIcon className="ml-1 h-5 w-5" />
           </Button>
         ),
         cell: ({ getValue }) => (
@@ -89,12 +103,30 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         ),
       },
       {
+        id: "forwardToName",
+        header: "Name",
+        cell: ({ row }) => {
+          const email = row.original.forwardTo;
+          const name = nameLookup[email];
+          if (email === defaultAddress) {
+            return <span className="text-lg">Default Forward</span>;
+          }
+          if (!name) {
+            return <span className="text-lg text-red-600">{email}</span>;
+          }
+          if (!statusLookup[email]) {
+            return <span className="text-lg text-red-600">{name}</span>;
+          }
+          return <span className="text-lg">{name ?? ""}</span>;
+        },
+      },
+      {
         id: "actions",
         header: "",
         cell: ({ row }) => {
           const { mailbox, forwardTo } = row.original;
           const forwardsForMailbox = entries.filter(
-            (e) => e.mailbox === mailbox,
+            (e) => e.mailbox === mailbox
           );
           const disableDelete =
             (forwardTo === defaultAddress && forwardsForMailbox.length > 1) ||
@@ -114,7 +146,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         },
       },
     ],
-    [entries, deleting],
+    [entries, deleting, nameLookup]
   );
 
   const table = useReactTable({
@@ -130,7 +162,6 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
 
   return (
     <>
-      {/* Top bar: Add button + Filters */}
       <div className="flex items-center space-x-4 mb-4">
         <ForwardingDialog entries={entries} onEntriesChange={onEntriesChange} />
         <Input
@@ -165,7 +196,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                   </TableHead>
                 ))}
@@ -180,7 +211,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
                     <TableCell key={cell.id} className="text-lg">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

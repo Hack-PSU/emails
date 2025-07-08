@@ -15,4 +15,5 @@ export interface OrganizerEntity {
   privilege: Role;
   judgingLocation?: string;
   award?: string;
+  isActive: boolean;
 }
