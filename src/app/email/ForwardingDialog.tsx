@@ -1,7 +1,7 @@
-// src/app/email/ForwardingDialog.tsx
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { z } from "zod";
 import {
   Dialog,
   DialogTrigger,
@@ -39,11 +39,24 @@ export default function ForwardingDialog({
   const [filter, setFilter] = useState("");
   const [mailbox, setMailbox] = useState<string | null>(null);
   const [forwardTo, setForwardTo] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pending, setPending] = useState<{ chosen: string; forwardTo: string } | null>(null);
+  const [pending, setPending] = useState<{
+    chosen: string;
+    forwardTo: string;
+  } | null>(null);
+
+  const emailSchema = useMemo(
+    () => z.string().email("Please enter a valid email address"),
+    []
+  );
+
   const { data: organizers = [] } = useAllOrganizers();
-  const organizerEmails = useMemo(() => organizers.map((o) => o.email), [organizers]);
+  const organizerEmails = useMemo(
+    () => organizers.map((o) => o.email),
+    [organizers]
+  );
 
   const defaultAddress = "hackpsudev@gmail.com";
 
@@ -65,6 +78,13 @@ export default function ForwardingDialog({
   useEffect(() => {
     if (open) onEntriesChange(entries);
   }, [open]);
+
+  const handleForwardToChange = (val: string) => {
+    setForwardTo(val);
+    const result = emailSchema.safeParse(val);
+    setEmailError(result.success ? null : result.error.errors[0].message);
+  };
+
   const actuallyAdd = async (chosen: string, forwardToAddr: string) => {
     const existing = entries
       .filter((e) => e.mailbox === chosen)
@@ -75,7 +95,9 @@ export default function ForwardingDialog({
 
     for (const addr of toAdd) {
       await fetch(
-        `/api/email?mailbox=${encodeURIComponent(chosen)}&forwardTo=${encodeURIComponent(addr)}`,
+        `/api/email?mailbox=${encodeURIComponent(
+          chosen
+        )}&forwardTo=${encodeURIComponent(addr)}`,
         { method: "POST" }
       );
     }
@@ -86,18 +108,15 @@ export default function ForwardingDialog({
 
   const handleAddClick = () => {
     const chosen = mailbox || filter;
-    if (!chosen || !forwardTo) return;
+    if (!chosen || !forwardTo || emailError) return;
 
-    // if not an organizer, show confirm
     if (!organizerEmails.includes(forwardTo)) {
       setPending({ chosen, forwardTo });
       setConfirmOpen(true);
     } else {
-      // safe to add immediately
       setLoading(true);
       actuallyAdd(chosen, forwardTo)
         .then(() => {
-          // reset form & close
           setFilter("");
           setMailbox(null);
           setForwardTo("");
@@ -108,6 +127,7 @@ export default function ForwardingDialog({
     }
   };
 
+  // confirm non-organizer
   const handleConfirm = async () => {
     if (!pending) return;
     setConfirmOpen(false);
@@ -130,7 +150,7 @@ export default function ForwardingDialog({
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" size="lg" className="bg-gray-800" disabled={loading}>
+          <Button variant="default" size="lg" disabled={loading}>
             New Forward
           </Button>
         </DialogTrigger>
@@ -139,11 +159,10 @@ export default function ForwardingDialog({
           <DialogHeader>
             <DialogTitle>Add Forwarding Rule</DialogTitle>
             <DialogDescription>
-              Type or select a mailbox key and an address to forward to.
+              Type or select a mailbox and an address to forward to.
             </DialogDescription>
           </DialogHeader>
 
-          {/* Mailbox combobox */}
           <div className="mt-4">
             <Command>
               <CommandInput
@@ -180,7 +199,7 @@ export default function ForwardingDialog({
                         onSelect={() => setMailbox(filter)}
                         className="px-3 py-2 cursor-pointer italic"
                       >
-                        Create mailbox &quot;{filter}&quot;
+                        Create mailbox "{filter}"
                       </CommandItem>
                     </CommandGroup>
                   )}
@@ -189,14 +208,16 @@ export default function ForwardingDialog({
             </Command>
           </div>
 
-          {/* Forward-to input */}
           <div className="mt-4">
             <Input
               placeholder="Forward to…"
               value={forwardTo}
-              onChange={(e) => setForwardTo(e.target.value)}
-              className="w-full"
+              onChange={(e) => handleForwardToChange(e.target.value)}
+              className={emailError ? "border-red-500" : ""}
             />
+            {emailError && (
+              <p className="mt-1 text-sm text-red-600">{emailError}</p>
+            )}
           </div>
 
           <DialogFooter>
@@ -211,7 +232,9 @@ export default function ForwardingDialog({
             <Button
               variant="default"
               onClick={handleAddClick}
-              disabled={!(mailbox || filter) || !forwardTo || loading}
+              disabled={
+                !(mailbox || filter) || !forwardTo || !!emailError || loading
+              }
             >
               {loading ? "Saving…" : "Add Forward"}
             </Button>
@@ -219,13 +242,12 @@ export default function ForwardingDialog({
         </DialogContent>
       </Dialog>
 
-      {/* Confirmation dialog for non-organizer email */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent className="w-80 p-4">
           <DialogHeader>
             <DialogTitle>Are you sure?</DialogTitle>
             <DialogDescription>
-              “{pending?.forwardTo}” is not a known organizer.
+              “{pending?.forwardTo}” is not a HackPSU organizer. Proceed anyway?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
