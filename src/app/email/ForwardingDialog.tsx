@@ -199,7 +199,7 @@ export default function ForwardingDialog({
                         onSelect={() => setMailbox(filter)}
                         className="px-3 py-2 cursor-pointer italic"
                       >
-                        Create mailbox "{filter}"
+                        Create mailbox &quot;{filter}&quot;
                       </CommandItem>
                     </CommandGroup>
                   )}
