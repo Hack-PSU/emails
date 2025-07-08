@@ -1,47 +1,42 @@
-name: Build & Push to Artifact Registry
+# .github/workflows/publish-to-artifact-registry.yml
+name: Build & Push to Google Artifact Registry
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
-
-env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION:     us-east4
-  REPOSITORY: emails
-  IMAGE_NAME: mailbox-forwarding
-  TAG:        ${{ github.sha }}
+    branches:
+      - main
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
         with:
+          # A GCP service-account JSON with Artifact Registry Writer role
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Configure GCloud
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Configure Docker for Artifact Registry
+      - name: Configure Docker to use Artifact Registry
         run: |
-          gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
+          gcloud auth configure-docker us-east4-docker.pkg.dev -q
 
-      - name: Build & Push Docker image
-        uses: docker/build-push-action@v6
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
         with:
           context: .
-          file: Dockerfile
           push: true
-          tags: |
-            ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE_NAME}:${TAG}
+          tags: us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/emails:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_BASE_URL_V3=${{ secrets.NEXT_PUBLIC_BASE_URL_V3 }}
             NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
@@ -51,8 +46,3 @@ jobs:
             NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
             NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
             NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-
-      - name: Trigger Portainer Deploy
-        run: |
-          curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}" \
-               -H "X-API-Key: ${{ secrets.PORTAINER_KEY }}"
