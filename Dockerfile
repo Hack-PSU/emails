@@ -1,7 +1,7 @@
 # Dockerfile for Next.js mailbox-forwarding project (uses Yarn & Node 25)
 
 # 1) Builder stage
-FROM node:25-alpine AS builder
+FROM node:24 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN yarn install --production --frozen-lockfile
 
 
 # 2) Runner stage
-FROM node:25-alpine AS runner
+FROM node:24 AS runner
 
 WORKDIR /app
 
