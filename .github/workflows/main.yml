@@ -1,0 +1,61 @@
+name: Push to prod
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION:     us-east4
+  REPO:       emails
+  IMAGE:      ${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO }}:${{ github.sha }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Checkout source
+      - uses: actions/checkout@v4
+
+      # 2) Authenticate to GCP using your service account key
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # 3) Install & configure gcloud
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          export_default_credentials: true
+
+      # 4) Configure Docker to push to Artifact Registry
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker \
+            ${REGION}-docker.pkg.dev \
+            --quiet
+
+      # 5) Install dependencies & build Next.js
+      - name: Install & Build
+        run: |
+          yarn
+          yarn run build
+
+      # 6) Build & push container image
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: |
+            ${REGION}-docker.pkg.dev/${{ env.IMAGE }}
+
+      # 7) Trigger Portainer redeploy via webhook
+      - name: Trigger Portainer Deploy
+        if: ${{ secrets.PORTAINER_WEBHOOK_URL }}
+        run: |
+          curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}" \
+            -H "X-API-Key: ${{ secrets.PORTAINER_KEY }}"
