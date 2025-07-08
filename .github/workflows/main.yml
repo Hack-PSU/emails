@@ -10,7 +10,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION:     us-east4
   REPO:       emails
-  IMAGE:      ${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO }}:${{ github.sha }}
+  IMAGE:      ${{ secrets.GCP_PROJECT_ID }}/emails:${{ github.sha }}
 
 jobs:
   build-and-push:
@@ -30,7 +30,6 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
 
       # 4) Configure Docker to push to Artifact Registry
       - name: Configure Docker for Artifact Registry
@@ -55,7 +54,6 @@ jobs:
 
       # 7) Trigger Portainer redeploy via webhook
       - name: Trigger Portainer Deploy
-        if: ${{ secrets.PORTAINER_WEBHOOK_URL }}
         run: |
           curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}" \
             -H "X-API-Key: ${{ secrets.PORTAINER_KEY }}"
