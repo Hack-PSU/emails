@@ -58,7 +58,7 @@ jobs:
         with:
           push: true
           tags: |
-            $us-east4-docker.pkg.dev/${{ env.IMAGE }}
+            us-east4-docker.pkg.dev/${{ env.IMAGE }}
 
       # 7) Trigger Portainer redeploy via webhook
       - name: Trigger Portainer Deploy
