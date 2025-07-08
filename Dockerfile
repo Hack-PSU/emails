@@ -82,10 +82,9 @@ ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SE
 ENV NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
 
 # copy built output
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.next    ./.next
 COPY --from=build /app/public   ./public
-# If you have a custom server (e.g. NestJS) that compiles to /app/dist, copy that instead:
-# COPY --from=build /app/dist    ./dist
 
-# ← Adjust your start command for Next.js npx --yes next start
-CMD ["npx", "--yes", "next", "start"]
+# ← Adjust your start command for Next.js
+CMD ["node_modules/.bin/next", "start", "-p", "3000"]
