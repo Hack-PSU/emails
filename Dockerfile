@@ -89,4 +89,4 @@ COPY --from=build /app/public   ./public
 # COPY --from=build /app/dist    ./dist
 
 # ← Adjust your start command for Next.js
-CMD ["yarn", "start"]
+CMD ["node_modules/.bin/next", "start", "-p", "3000"]
