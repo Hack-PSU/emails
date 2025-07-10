@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HackPSU Finance Dashboard",
+  title: "HackPSU Email Forward Manager",
 };
 
 export default function RootLayout({

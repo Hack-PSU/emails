@@ -8,7 +8,7 @@ import {
   signOut,
   User,
   onIdTokenChanged,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 

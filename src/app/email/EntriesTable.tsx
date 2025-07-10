@@ -58,7 +58,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
     try {
       await fetch(
         `/api/email?mailbox=${encodeURIComponent(mailbox)}&forwardTo=${encodeURIComponent(forwardTo)}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
       const res = await fetch("/api/email");
       const data = await res.json();
@@ -126,7 +126,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         cell: ({ row }) => {
           const { mailbox, forwardTo } = row.original;
           const forwardsForMailbox = entries.filter(
-            (e) => e.mailbox === mailbox
+            (e) => e.mailbox === mailbox,
           );
           const disableDelete =
             (forwardTo === defaultAddress && forwardsForMailbox.length > 1) ||
@@ -146,7 +146,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         },
       },
     ],
-    [entries, deleting, nameLookup]
+    [entries, deleting, nameLookup],
   );
 
   const table = useReactTable({
@@ -196,7 +196,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -211,7 +211,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
                     <TableCell key={cell.id} className="text-lg">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

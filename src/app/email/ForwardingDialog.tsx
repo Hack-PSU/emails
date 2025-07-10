@@ -49,30 +49,30 @@ export default function ForwardingDialog({
 
   const emailSchema = useMemo(
     () => z.string().email("Please enter a valid email address"),
-    []
+    [],
   );
 
   const { data: organizers = [] } = useAllOrganizers();
   const organizerEmails = useMemo(
     () => organizers.map((o) => o.email),
-    [organizers]
+    [organizers],
   );
 
   const defaultAddress = "hackpsudev@gmail.com";
 
   const mailboxKeys = useMemo(
     () => Array.from(new Set(entries.map((e) => e.mailbox))),
-    [entries]
+    [entries],
   );
 
   const filteredMailboxes = useMemo(
     () =>
       filter
         ? mailboxKeys.filter((m) =>
-            m.toLowerCase().includes(filter.toLowerCase())
+            m.toLowerCase().includes(filter.toLowerCase()),
           )
         : mailboxKeys,
-    [mailboxKeys, filter]
+    [mailboxKeys, filter],
   );
 
   useEffect(() => {
@@ -96,9 +96,9 @@ export default function ForwardingDialog({
     for (const addr of toAdd) {
       await fetch(
         `/api/email?mailbox=${encodeURIComponent(
-          chosen
+          chosen,
         )}&forwardTo=${encodeURIComponent(addr)}`,
-        { method: "POST" }
+        { method: "POST" },
       );
     }
     const res = await fetch("/api/email");
@@ -186,7 +186,7 @@ export default function ForwardingDialog({
                         }}
                         className={cn(
                           "px-3 py-2 cursor-pointer",
-                          mailbox === m && "bg-muted font-medium"
+                          mailbox === m && "bg-muted font-medium",
                         )}
                       >
                         {m}
