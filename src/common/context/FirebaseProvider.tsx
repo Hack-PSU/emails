@@ -8,6 +8,7 @@ import {
   signOut,
   User,
   onIdTokenChanged,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
@@ -52,6 +53,7 @@ type FirebaseProviderHooks = {
   error: string;
   loginWithEmailAndPassword(email: string, password: string): Promise<void>;
   logout(): Promise<void>;
+  resetPassword(email: string): Promise<void>;
 };
 
 type Props = {
@@ -127,6 +129,20 @@ const FirebaseProvider: React.FC<Props> = ({ children, auth }) => {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    setError("");
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      console.log("Password reset email sent successfully.");
+    } catch (err) {
+      setError((err as AuthError).message || "Password reset failed");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -144,6 +160,7 @@ const FirebaseProvider: React.FC<Props> = ({ children, auth }) => {
     error,
     loginWithEmailAndPassword,
     logout,
+    resetPassword,
   };
 
   return (

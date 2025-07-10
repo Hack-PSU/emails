@@ -22,7 +22,8 @@ interface FormData {
 }
 
 export default function Login() {
-  const { user, loginWithEmailAndPassword, logout, isLoading } = useFirebase();
+  const { user, loginWithEmailAndPassword, logout, isLoading, resetPassword } =
+    useFirebase();
   const [loginError, setLoginError] = useState<string>("");
   const [isProcessing, setProcessing] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +45,20 @@ export default function Login() {
       setLoginError(msg);
     }
     setProcessing(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!methods.getValues("email")) {
+      setLoginError("Please enter your email address.");
+      return;
+    }
+    try {
+      await resetPassword(methods.getValues("email"));
+      setLoginError("Password reset email sent. Please check your inbox.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setLoginError(msg);
+    }
   };
 
   return (
@@ -127,6 +142,14 @@ export default function Login() {
                   disabled={isProcessing}
                 >
                   {isProcessing ? "Signing In…" : "Sign In"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full text-sm text-muted-foreground"
+                  onClick={() => handleForgotPassword()}
+                >
+                  Forgot Password?
                 </Button>
               </form>
             </FormProvider>
