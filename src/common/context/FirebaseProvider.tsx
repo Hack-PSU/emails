@@ -129,11 +129,15 @@ const FirebaseProvider: React.FC<Props> = ({ children, auth }) => {
     }
   };
 
+  const actionCodeSettings = {
+    url: "https://emails.hackpsu.org/login",
+    handleCodeInApp: true,
+  };
   const resetPassword = async (email: string) => {
     setError("");
     setIsLoading(true);
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email, actionCodeSettings);
       console.log("Password reset email sent successfully.");
     } catch (err) {
       setError((err as AuthError).message || "Password reset failed");
