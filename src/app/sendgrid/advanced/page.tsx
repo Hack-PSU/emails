@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect, useMemo } from "react";
 import {
@@ -114,7 +115,7 @@ export default function AdvancedDashboard() {
   );
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [limit, setLimit] = useState(100);
-  const [offset, setOffset] = useState(0);
+  const [offset] = useState(0);
 
   // State for advanced stats
   const [browserStats, setBrowserStats] = useState<AdvancedStat[]>([]);
@@ -355,7 +356,7 @@ export default function AdvancedDashboard() {
             <CardHeader>
               <CardTitle>Clicks by Browser</CardTitle>
               <CardDescription>
-                Unique clicks segmented by the recipient's browser.
+                Unique clicks segmented by the recipient&apos;s browser.
               </CardDescription>
             </CardHeader>
             <CardContent>

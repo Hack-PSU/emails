@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
 
 interface FormData {
   email: string;
@@ -27,7 +26,6 @@ export default function Login() {
   const [loginError, setLoginError] = useState<string>("");
   const [isProcessing, setProcessing] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
   const methods = useForm<FormData>({
     defaultValues: { email: "", password: "" },
