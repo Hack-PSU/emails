@@ -158,13 +158,6 @@ export default function Login() {
 
         {user && (
           <CardFooter className="flex flex-col space-y-2">
-            <Button
-              variant="outline"
-              className="w-full mt-2"
-              onClick={() => router.push("/email")}
-            >
-              Manage Emails
-            </Button>
             <Button variant="outline" className="w-full" onClick={logout}>
               Log Out
             </Button>

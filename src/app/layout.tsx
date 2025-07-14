@@ -5,6 +5,7 @@ import { LayoutProvider } from "@/common/context";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material";
 import theme from "@/theme";
+import { Navbar } from "@/components/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <LayoutProvider>
           <AppRouterCacheProvider>
+            <Navbar />
             <ThemeProvider theme={theme}>{children}</ThemeProvider>
           </AppRouterCacheProvider>
         </LayoutProvider>
