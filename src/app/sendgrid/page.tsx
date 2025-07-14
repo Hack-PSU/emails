@@ -82,7 +82,7 @@ export default function SendGridDashboard() {
   );
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [filters, setFilters] = useState<DashboardFilters>({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    startDate: new Date(Date.now() - 12 * 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0],
     endDate: new Date().toISOString().split("T")[0],

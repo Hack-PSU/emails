@@ -111,7 +111,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function AdvancedDashboard() {
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>(
-    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    new Date(Date.now() - 12 * 30 * 24 * 60 * 60 * 1000),
   );
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [limit, setLimit] = useState(100);
