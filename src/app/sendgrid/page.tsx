@@ -78,7 +78,7 @@ export default function SendGridDashboard() {
   const [stats, setStats] = useState<SendGridStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>(
-    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    new Date(Date.now() - 12 * 30 * 24 * 60 * 60 * 1000),
   );
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [filters, setFilters] = useState<DashboardFilters>({
