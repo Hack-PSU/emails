@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Entry } from "./types";
 import EntriesTable from "./EntriesTable";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,6 +37,7 @@ export default function EmailForwardingPage() {
         <Skeleton className="h-6 w-full" />
       </div>
     );
+
   if (error) return <p className="text-lg text-red-600">Error: {error}</p>;
 
   return (

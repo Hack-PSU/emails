@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
+  type ColumnDef,
+  type SortingState,
+  type ColumnFiltersState,
   flexRender,
 } from "@tanstack/react-table";
 import type { Entry } from "./types";
@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDownIcon, TrashIcon } from "lucide-react";
 import ForwardingDialog from "./ForwardingDialog";
 import { useAllOrganizers } from "@/common/api/organizer/hook";
+import { toast } from "sonner";
 
 interface Props {
   entries: Entry[];
@@ -39,16 +40,19 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
   const [deleting, setDeleting] = useState(false);
 
   const { data: organizers = [] } = useAllOrganizers();
+
+  // Create lowercase email lookup for names
   const nameLookup = useMemo(() => {
     return organizers.reduce<Record<string, string>>((acc, org) => {
-      acc[org.email] = `${org.firstName} ${org.lastName}`;
+      acc[org.email.toLowerCase()] = `${org.firstName} ${org.lastName}`;
       return acc;
     }, {});
   }, [organizers]);
 
+  // Create lowercase email lookup for status
   const statusLookup = useMemo(() => {
     return organizers.reduce<Record<string, boolean>>((acc, org) => {
-      acc[org.email] = org.isActive ? true : false;
+      acc[org.email.toLowerCase()] = org.isActive ? true : false;
       return acc;
     }, {});
   }, [organizers]);
@@ -56,15 +60,24 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
   const handleDelete = async (mailbox: string, forwardTo: string) => {
     setDeleting(true);
     try {
-      await fetch(
+      const response = await fetch(
         `/api/email?mailbox=${encodeURIComponent(mailbox)}&forwardTo=${encodeURIComponent(forwardTo)}`,
         { method: "DELETE" },
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete forwarding rule");
+      }
+
       const res = await fetch("/api/email");
       const data = await res.json();
-      if (data.ok) onEntriesChange(data.ok);
+      if (data.ok) {
+        onEntriesChange(data.ok);
+        toast.success("Forwarding rule deleted successfully");
+      }
     } catch (err) {
       console.error("Failed to delete forward", err);
+      toast.error("Failed to delete forwarding rule");
     } finally {
       setDeleting(false);
     }
@@ -106,17 +119,25 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         id: "forwardToName",
         header: "Name",
         cell: ({ row }) => {
-          const email = row.original.forwardTo;
+          const email = row.original.forwardTo.toLowerCase(); // Normalize for lookup
           const name = nameLookup[email];
-          if (email === defaultAddress) {
+
+          if (email === defaultAddress.toLowerCase()) {
             return <span className="text-lg">Default Forward</span>;
           }
+
           if (!name) {
-            return <span className="text-lg text-red-600">{email}</span>;
+            return (
+              <span className="text-lg text-red-600">
+                {row.original.forwardTo}
+              </span>
+            );
           }
+
           if (!statusLookup[email]) {
             return <span className="text-lg text-red-600">{name}</span>;
           }
+
           return <span className="text-lg">{name ?? ""}</span>;
         },
       },
@@ -129,7 +150,8 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
             (e) => e.mailbox === mailbox,
           );
           const disableDelete =
-            (forwardTo === defaultAddress && forwardsForMailbox.length > 1) ||
+            (forwardTo.toLowerCase() === defaultAddress.toLowerCase() &&
+              forwardsForMailbox.length > 1) ||
             mailbox === "*";
 
           return (
@@ -146,7 +168,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         },
       },
     ],
-    [entries, deleting, nameLookup],
+    [entries, deleting, nameLookup, statusLookup],
   );
 
   const table = useReactTable({

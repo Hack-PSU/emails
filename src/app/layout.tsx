@@ -6,6 +6,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { Navbar } from "@/components/navbar";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <LayoutProvider>
           <AppRouterCacheProvider>
+            <Toaster />
             <Navbar />
             <ThemeProvider theme={theme}>{children}</ThemeProvider>
           </AppRouterCacheProvider>

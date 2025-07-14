@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { z } from "zod";
 import {
   Dialog,
@@ -53,8 +53,10 @@ export default function ForwardingDialog({
   );
 
   const { data: organizers = [] } = useAllOrganizers();
+
+  // Create lowercase email lookup for organizers
   const organizerEmails = useMemo(
-    () => organizers.map((o) => o.email),
+    () => organizers.map((o) => o.email.toLowerCase()),
     [organizers],
   );
 
@@ -86,36 +88,57 @@ export default function ForwardingDialog({
   };
 
   const actuallyAdd = async (chosen: string, forwardToAddr: string) => {
+    // Convert email to lowercase before processing
+    const normalizedForwardTo = forwardToAddr.toLowerCase();
+
     const existing = entries
       .filter((e) => e.mailbox === chosen)
-      .map((e) => e.forwardTo);
-    const toAdd: string[] = [];
-    if (!existing.includes(defaultAddress)) toAdd.push(defaultAddress);
-    if (!existing.includes(forwardToAddr)) toAdd.push(forwardToAddr);
+      .map((e) => e.forwardTo.toLowerCase()); // Normalize existing emails for comparison
 
-    for (const addr of toAdd) {
-      await fetch(
-        `/api/email?mailbox=${encodeURIComponent(
-          chosen,
-        )}&forwardTo=${encodeURIComponent(addr)}`,
-        { method: "POST" },
-      );
+    const toAdd: string[] = [];
+    if (!existing.includes(defaultAddress.toLowerCase()))
+      toAdd.push(defaultAddress);
+    if (!existing.includes(normalizedForwardTo))
+      toAdd.push(normalizedForwardTo);
+
+    try {
+      for (const addr of toAdd) {
+        const response = await fetch(
+          `/api/email?mailbox=${encodeURIComponent(chosen)}&forwardTo=${encodeURIComponent(addr)}`,
+          { method: "POST" },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to add forwarding rule for ${addr}`);
+        }
+      }
+
+      const res = await fetch("/api/email");
+      const data = await res.json();
+      if (data.ok) {
+        onEntriesChange(data.ok);
+        toast.success("Forwarding rule added successfully");
+      }
+    } catch (error) {
+      console.error("Error adding forwarding rule:", error);
+      toast.error("Failed to add forwarding rule");
+      throw error;
     }
-    const res = await fetch("/api/email");
-    const data = await res.json();
-    if (data.ok) onEntriesChange(data.ok);
   };
 
   const handleAddClick = () => {
     const chosen = mailbox || filter;
     if (!chosen || !forwardTo || emailError) return;
 
-    if (!organizerEmails.includes(forwardTo)) {
-      setPending({ chosen, forwardTo });
+    // Normalize email for organizer check
+    const normalizedForwardTo = forwardTo.toLowerCase();
+
+    if (!organizerEmails.includes(normalizedForwardTo)) {
+      setPending({ chosen, forwardTo: normalizedForwardTo });
       setConfirmOpen(true);
     } else {
       setLoading(true);
-      actuallyAdd(chosen, forwardTo)
+      actuallyAdd(chosen, normalizedForwardTo)
         .then(() => {
           setFilter("");
           setMailbox(null);
@@ -154,7 +177,6 @@ export default function ForwardingDialog({
             New Forward
           </Button>
         </DialogTrigger>
-
         <DialogContent className="w-96 p-6">
           <DialogHeader>
             <DialogTitle>Add Forwarding Rule</DialogTitle>
@@ -162,7 +184,6 @@ export default function ForwardingDialog({
               Type or select a mailbox and an address to forward to.
             </DialogDescription>
           </DialogHeader>
-
           <div className="mt-4">
             <Command>
               <CommandInput
@@ -207,7 +228,6 @@ export default function ForwardingDialog({
               </ScrollArea>
             </Command>
           </div>
-
           <div className="mt-4">
             <Input
               placeholder="Forward to…"
@@ -219,7 +239,6 @@ export default function ForwardingDialog({
               <p className="mt-1 text-sm text-red-600">{emailError}</p>
             )}
           </div>
-
           <DialogFooter>
             <Button
               variant="secondary"
@@ -247,7 +266,8 @@ export default function ForwardingDialog({
           <DialogHeader>
             <DialogTitle>Are you sure?</DialogTitle>
             <DialogDescription>
-              “{pending?.forwardTo}” is not a HackPSU organizer. Proceed anyway?
+              &quot;{pending?.forwardTo}&quot; is not a HackPSU organizer.
+              Proceed anyway?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
