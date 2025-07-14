@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Mail,
-  BarChart3,
-  TrendingUp,
-  User,
-  Menu,
-} from "lucide-react";
+import { Mail, BarChart3, TrendingUp, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
