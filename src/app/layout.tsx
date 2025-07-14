@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <LayoutProvider>
           <AppRouterCacheProvider>
-            <Toaster />
+            <Toaster richColors />
             <Navbar />
             <ThemeProvider theme={theme}>{children}</ThemeProvider>
           </AppRouterCacheProvider>
