@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, BarChart3, TrendingUp, User, Menu } from "lucide-react";
+import { Forward, Mail, BarChart3, TrendingUp, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +16,8 @@ import Image from "next/image";
 const navigation = [
   { name: "Metrics", href: "/sendgrid", icon: BarChart3 },
   { name: "Categories", href: "/sendgrid/advanced", icon: TrendingUp },
-  { name: "Forwards", href: "/email", icon: Mail },
+  { name: "Forwards", href: "/email", icon: Forward },
+  { name: "Send Email", href: "/send", icon: Mail },
   { name: "Login", href: "/login", icon: User },
 ];
 

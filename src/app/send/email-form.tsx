@@ -80,7 +80,6 @@ export default function EmailForm() {
     // Validate form before preview
     const result = emailFormSchema.safeParse(formData);
     if (!result.success) {
-      console.error("Form validation failed", result.error);
       toast.error("Please fill in all required fields before previewing");
       return;
     }
