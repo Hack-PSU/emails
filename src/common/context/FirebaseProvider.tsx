@@ -69,7 +69,7 @@ export const FirebaseProvider: FC<Props> = ({ children }) => {
         const { signInWithCustomToken } = await import("firebase/auth");
         const userCredential = await signInWithCustomToken(
           auth,
-          data.customToken
+          data.customToken,
         );
 
         console.log("Firebase sign-in successful:", userCredential.user.email);
@@ -89,7 +89,7 @@ export const FirebaseProvider: FC<Props> = ({ children }) => {
       setUser(null);
       setToken(undefined);
       setError(
-        err instanceof Error ? err.message : "Session verification failed"
+        err instanceof Error ? err.message : "Session verification failed",
       );
       throw err;
     }
@@ -104,7 +104,7 @@ export const FirebaseProvider: FC<Props> = ({ children }) => {
       setIsLoading(true);
       try {
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Session check timeout")), 5000)
+          setTimeout(() => reject(new Error("Session check timeout")), 5000),
         );
 
         await Promise.race([verifySession(), timeoutPromise]);
@@ -171,7 +171,7 @@ export const FirebaseProvider: FC<Props> = ({ children }) => {
       verifySession,
       logout,
     }),
-    [isLoading, user, token, error, verifySession, logout, isLoggingOut]
+    [isLoading, user, token, error, verifySession, logout, isLoggingOut],
   );
 
   return (

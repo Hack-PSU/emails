@@ -4,10 +4,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import {
-  useForm,
-  SubmitHandler,
-} from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 import {
   Card,
@@ -64,8 +61,18 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
     defaultSubject: "Sponsorship Opportunity with HackPSU",
     defaultFrom: "sponsorship@hackpsu.org",
     fields: [
-      { name: "sponsorName", label: "Sponsor Name", placeholder: "John Smith", required: true },
-      { name: "companyName", label: "Company Name", placeholder: "Tech Corp", required: true },
+      {
+        name: "sponsorName",
+        label: "Sponsor Name",
+        placeholder: "John Smith",
+        required: true,
+      },
+      {
+        name: "companyName",
+        label: "Company Name",
+        placeholder: "Tech Corp",
+        required: true,
+      },
       { name: "yourName", label: "Your Name", placeholder: "Your full name" },
     ],
   },
@@ -75,7 +82,38 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
     defaultSubject: "Join the HackPSU Organizer Team",
     defaultFrom: "team@hackpsu.org",
     fields: [
-      { name: "firstName", label: "Recipient First Name", placeholder: "Alex", required: true },
+      {
+        name: "firstName",
+        label: "Recipient First Name",
+        placeholder: "Alex",
+        required: true,
+      },
+    ],
+  },
+  {
+    id: "repeat-sponsor",
+    label: "Repeat Sponsor Outreach",
+    defaultSubject: "Sponsorship Opportunity with HackPSU",
+    defaultFrom: "sponsorship@hackpsu.org",
+    fields: [
+      {
+        name: "sponsor_name_or_company",
+        label: "Sponsor Name or Company",
+        placeholder: "Tech Corp",
+        required: true,
+      },
+      {
+        name: "company_name",
+        label: "Company Name",
+        placeholder: "Tech Corp",
+        required: true,
+      },
+      {
+        name: "sponsorship_packet_url",
+        label: "Sponsorship Packet URL",
+        placeholder: "https://hackpsu.org/sponsorship-packet.pdf",
+      },
+      { name: "your_name", label: "Your Name", placeholder: "Your full name" },
     ],
   },
 ];
@@ -118,7 +156,10 @@ function pickTemplateData(data: EmailFormData, fields: FieldConfig[]) {
 }
 
 /** Super small CSV parser (no quotes/commas-in-field support). Good enough for simple input. */
-function parseCSV(text: string): { headers: string[]; rows: Record<string, string>[] } {
+function parseCSV(text: string): {
+  headers: string[];
+  rows: Record<string, string>[];
+} {
   const lines = text
     .trim()
     .split(/\r?\n/)
@@ -150,7 +191,7 @@ export default function EmailForm() {
   });
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
-    TEMPLATE_CONFIGS[0].id
+    TEMPLATE_CONFIGS[0].id,
   );
   const [bulkMode, setBulkMode] = useState(false);
   const [csvText, setCsvText] = useState("");
@@ -165,12 +206,12 @@ export default function EmailForm() {
 
   const selectedTemplate = useMemo(
     () => TEMPLATE_CONFIGS.find((t) => t.id === selectedTemplateId)!,
-    [selectedTemplateId]
+    [selectedTemplateId],
   );
 
   const defaultVals = useMemo(
     () => buildDefaultValues(selectedTemplate),
-    [selectedTemplate]
+    [selectedTemplate],
   );
 
   const {
@@ -226,7 +267,9 @@ export default function EmailForm() {
     try {
       const formData = getValues();
       const templateData = pickTemplateData(formData, selectedTemplate.fields);
-      const preview = await getTemplatePreview(selectedTemplate.id, { data: templateData });
+      const preview = await getTemplatePreview(selectedTemplate.id, {
+        data: templateData,
+      });
       setState((p) => ({
         ...p,
         previewHtml: preview.html,
@@ -253,7 +296,8 @@ export default function EmailForm() {
         template: selectedTemplate.id,
         subject: data.subject,
         data: templateData,
-        from: data.from || selectedTemplate.defaultFrom || "noreply@hackpsu.org",
+        from:
+          data.from || selectedTemplate.defaultFrom || "noreply@hackpsu.org",
       });
 
       setState((p) => ({ ...p, isLoading: false }));
@@ -309,7 +353,12 @@ export default function EmailForm() {
 
     setBulkResults([]);
     setState((p) => ({ ...p, isLoading: true }));
-    const results: { index: number; to: string; status: "success" | "error"; error?: string }[] = [];
+    const results: {
+      index: number;
+      to: string;
+      status: "success" | "error";
+      error?: string;
+    }[] = [];
 
     for (let i = 0; i < csvParsed.rows.length; i++) {
       const row = csvParsed.rows[i];
@@ -317,7 +366,12 @@ export default function EmailForm() {
       // Validate email + required dynamic fields for this row
       const to = row.to;
       if (!to || !EMAIL_REGEX.test(to)) {
-        results.push({ index: i + 1, to: to || "", status: "error", error: "Invalid or missing 'to'" });
+        results.push({
+          index: i + 1,
+          to: to || "",
+          status: "error",
+          error: "Invalid or missing 'to'",
+        });
         continue;
       }
 
@@ -340,7 +394,9 @@ export default function EmailForm() {
 
       // Build data
       const templateData: Record<string, string> = {};
-      selectedTemplate.fields.forEach((f) => (templateData[f.name] = row[f.name] ?? ""));
+      selectedTemplate.fields.forEach(
+        (f) => (templateData[f.name] = row[f.name] ?? ""),
+      );
 
       try {
         await sendMail({
@@ -348,7 +404,11 @@ export default function EmailForm() {
           template: selectedTemplate.id,
           subject: row.subject || defaultVals.subject,
           data: templateData,
-          from: row.from || defaultVals.from || selectedTemplate.defaultFrom || "noreply@hackpsu.org",
+          from:
+            row.from ||
+            defaultVals.from ||
+            selectedTemplate.defaultFrom ||
+            "noreply@hackpsu.org",
         });
         results.push({ index: i + 1, to, status: "success" });
       } catch (err: any) {
@@ -364,7 +424,9 @@ export default function EmailForm() {
     setBulkResults(results);
     setState((p) => ({ ...p, isLoading: false }));
     const successCount = results.filter((r) => r.status === "success").length;
-    toast.success(`Bulk send completed. Success: ${successCount}/${results.length}`);
+    toast.success(
+      `Bulk send completed. Success: ${successCount}/${results.length}`,
+    );
   };
 
   /* ----------------------- Render ----------------------- */
@@ -380,7 +442,8 @@ export default function EmailForm() {
             HackPSU Email Sender
           </CardTitle>
           <CardDescription>
-            Choose a template and personalize your email. Switch to bulk mode for CSV sends.
+            Choose a template and personalize your email. Switch to bulk mode
+            for CSV sends.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -446,7 +509,9 @@ export default function EmailForm() {
                       })}
                     />
                     {errors.to && (
-                      <p className="text-sm text-red-600">{errors.to.message}</p>
+                      <p className="text-sm text-red-600">
+                        {errors.to.message}
+                      </p>
                     )}
                   </div>
 
@@ -456,7 +521,9 @@ export default function EmailForm() {
                     <Input
                       id="from"
                       type="email"
-                      placeholder={selectedTemplate.defaultFrom || "your@email.com"}
+                      placeholder={
+                        selectedTemplate.defaultFrom || "your@email.com"
+                      }
                       {...register("from", {
                         pattern: {
                           value: EMAIL_REGEX,
@@ -465,7 +532,9 @@ export default function EmailForm() {
                       })}
                     />
                     {errors.from && (
-                      <p className="text-sm text-red-600">{errors.from.message}</p>
+                      <p className="text-sm text-red-600">
+                        {errors.from.message}
+                      </p>
                     )}
                   </div>
 
@@ -480,7 +549,9 @@ export default function EmailForm() {
                       })}
                     />
                     {errors.subject && (
-                      <p className="text-sm text-red-600">{errors.subject.message}</p>
+                      <p className="text-sm text-red-600">
+                        {errors.subject.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -528,7 +599,11 @@ export default function EmailForm() {
               </div>
 
               {/* Hidden templateId */}
-              <input type="hidden" value={selectedTemplate.id} {...register("templateId")} />
+              <input
+                type="hidden"
+                value={selectedTemplate.id}
+                {...register("templateId")}
+              />
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
@@ -582,7 +657,8 @@ export default function EmailForm() {
                   rows={10}
                 />
                 <p className="text-sm text-gray-500">
-                  Required headers: <code>to</code>{", "}
+                  Required headers: <code>to</code>
+                  {", "}
                   {selectedTemplate.fields
                     .filter((f) => f.required)
                     .map((f) => f.name)
@@ -619,15 +695,23 @@ export default function EmailForm() {
               {/* Results */}
               {bulkResults.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-3">Bulk Send Results</h3>
+                  <h3 className="text-lg font-semibold mb-3">
+                    Bulk Send Results
+                  </h3>
                   <div className="overflow-x-auto border rounded-md">
                     <table className="min-w-full text-sm">
                       <thead className="bg-gray-100">
                         <tr>
                           <th className="px-3 py-2 text-left font-medium">#</th>
-                          <th className="px-3 py-2 text-left font-medium">To</th>
-                          <th className="px-3 py-2 text-left font-medium">Status</th>
-                          <th className="px-3 py-2 text-left font-medium">Error</th>
+                          <th className="px-3 py-2 text-left font-medium">
+                            To
+                          </th>
+                          <th className="px-3 py-2 text-left font-medium">
+                            Status
+                          </th>
+                          <th className="px-3 py-2 text-left font-medium">
+                            Error
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -637,7 +721,9 @@ export default function EmailForm() {
                             <td className="px-3 py-2">{r.to}</td>
                             <td
                               className={`px-3 py-2 ${
-                                r.status === "success" ? "text-green-600" : "text-red-600"
+                                r.status === "success"
+                                  ? "text-green-600"
+                                  : "text-red-600"
                               }`}
                             >
                               {r.status}
@@ -660,7 +746,9 @@ export default function EmailForm() {
         <Card>
           <CardHeader>
             <CardTitle>Email Preview</CardTitle>
-            <CardDescription>This is how your email will appear to the recipient</CardDescription>
+            <CardDescription>
+              This is how your email will appear to the recipient
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div

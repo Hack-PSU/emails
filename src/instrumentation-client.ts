@@ -6,5 +6,5 @@ posthog.init("phc_d5zDFPQokbIKMjFyawWWEvGUzTK4PzOn6ae1xxXuaX3", {
   defaults: "2025-05-24",
   capture_exceptions: true, // This enables capturing exceptions using Error Tracking
   debug: process.env.NODE_ENV === "development",
-  opt_in_site_apps: true
+  opt_in_site_apps: true,
 });
