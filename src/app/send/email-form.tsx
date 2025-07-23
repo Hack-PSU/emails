@@ -113,7 +113,7 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
         label: "Sponsorship Packet URL",
         placeholder: "https://hackpsu.org/sponsorship-packet.pdf",
       },
-      { name: "your_name", label: "Your Name", placeholder: "Your full name" },
+      { name: "yourName", label: "Your Name", placeholder: "Your full name" },
     ],
   },
 ];
