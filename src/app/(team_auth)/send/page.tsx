@@ -1,4 +1,4 @@
-import EmailForm from "@/app/send/email-form";
+import EmailForm from "@/app/(team_auth)/send/email-form";
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50 py-8">
