@@ -116,6 +116,21 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { name: "yourName", label: "Your Name", placeholder: "Your full name" },
     ],
   },
+  {
+    id: "login-update",
+    label: "Login System and Tools Access",
+    defaultSubject: "New Login System and Tools Access",
+    defaultFrom: "technology@hackpsu.org",
+    fields: [
+      {
+        name: "firstName",
+        label: "Recipient First Name",
+        placeholder: "Alex",
+        required: true,
+        type: "text",
+      },
+    ],
+  },
 ];
 
 /* ----------------------- TYPES & HELPERS ----------------------- */
@@ -191,7 +206,7 @@ export default function EmailForm() {
   });
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
-    TEMPLATE_CONFIGS[0].id,
+    TEMPLATE_CONFIGS[0].id
   );
   const [bulkMode, setBulkMode] = useState(false);
   const [csvText, setCsvText] = useState("");
@@ -206,12 +221,12 @@ export default function EmailForm() {
 
   const selectedTemplate = useMemo(
     () => TEMPLATE_CONFIGS.find((t) => t.id === selectedTemplateId)!,
-    [selectedTemplateId],
+    [selectedTemplateId]
   );
 
   const defaultVals = useMemo(
     () => buildDefaultValues(selectedTemplate),
-    [selectedTemplate],
+    [selectedTemplate]
   );
 
   const {
@@ -395,7 +410,7 @@ export default function EmailForm() {
       // Build data
       const templateData: Record<string, string> = {};
       selectedTemplate.fields.forEach(
-        (f) => (templateData[f.name] = row[f.name] ?? ""),
+        (f) => (templateData[f.name] = row[f.name] ?? "")
       );
 
       try {
@@ -425,7 +440,7 @@ export default function EmailForm() {
     setState((p) => ({ ...p, isLoading: false }));
     const successCount = results.filter((r) => r.status === "success").length;
     toast.success(
-      `Bulk send completed. Success: ${successCount}/${results.length}`,
+      `Bulk send completed. Success: ${successCount}/${results.length}`
     );
   };
 
