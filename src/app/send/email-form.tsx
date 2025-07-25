@@ -131,6 +131,15 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
       },
     ],
   },
+  {
+    id: "outreach",
+    label: "Outreach to other Universities",
+    defaultSubject: "Help spread the word about HackPSU October 25-26!",
+    defaultFrom: "team@hackpsu.org",
+    fields: [
+      { name: "yourName", label: "Your Name", placeholder: "Your full name" },
+    ],
+  },
 ];
 
 /* ----------------------- TYPES & HELPERS ----------------------- */
