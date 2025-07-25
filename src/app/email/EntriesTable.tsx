@@ -26,6 +26,7 @@ import { ArrowUpDownIcon, TrashIcon } from "lucide-react";
 import ForwardingDialog from "./ForwardingDialog";
 import { useAllOrganizers } from "@/common/api/organizer/hook";
 import { toast } from "sonner";
+import { sendMail } from "@/common/api/mail";
 
 interface Props {
   entries: Entry[];
@@ -68,6 +69,17 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
       if (!response.ok) {
         throw new Error("Failed to delete forwarding rule");
       }
+
+      await sendMail({
+        to: ["technology@hackpsu.org"],
+        subject: "Email Forwarding Deleted",
+        template: "email-forwarding-updated",
+        data: {
+          action: "deleted",
+          mailbox: mailbox,
+          forwardTo: forwardTo,
+        },
+      });
 
       const res = await fetch("/api/email");
       const data = await res.json();

@@ -26,6 +26,7 @@ import type { Entry } from "./types";
 import { cn } from "@/lib/utils";
 import { useAllOrganizers } from "@/common/api/organizer/hook";
 import { toast } from "sonner";
+import { sendMail } from "@/common/api/mail";
 
 interface ForwardingDialogProps {
   entries: Entry[];
@@ -112,6 +113,16 @@ export default function ForwardingDialog({
         if (!response.ok) {
           throw new Error(`Failed to add forwarding rule for ${addr}`);
         }
+        await sendMail({
+          to: ["technology@hackpsu.org"],
+          subject: "Email Forwarding Added",
+          template: "email-forwarding-updated",
+          data: {
+            action: "added",
+            mailbox: chosen,
+            forwardTo: addr,
+          },
+        });
       }
 
       const res = await fetch("/api/email");
