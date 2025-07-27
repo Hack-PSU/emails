@@ -1,4 +1,6 @@
 name: Test Build Docker Image
+permissions:
+  contents: read
 
 on:
   push:
