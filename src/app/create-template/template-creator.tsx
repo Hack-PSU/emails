@@ -67,7 +67,13 @@ export default function TemplateCreator() {
   };
 
   const convertTextToFile = (content: string, filename: string): File => {
-    const blob = new Blob([content], { type: "text/html" });
+    // Wrap user content in proper MJML structure for injection into base template
+    const wrappedContent = `<mj-section>
+      <mj-column>
+        <mj-text>${content}</mj-text>
+      </mj-column>
+    </mj-section>`;
+    const blob = new Blob([wrappedContent], { type: "text/html" });
     return new File([blob], filename, { type: "text/html" });
   };
 
@@ -152,8 +158,7 @@ export default function TemplateCreator() {
               Upload Template
             </CardTitle>
             <CardDescription>
-              Create your email template by entering HTML or plain text content
-              below
+              Create your email template by entering plain text content below
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,9 +172,9 @@ export default function TemplateCreator() {
                 </Label>
                 <Textarea
                   id="templateContent"
-                  placeholder="Enter your email template here (HTML or plain text)..."
+                  placeholder="Enter your email content here (plain text only)..."
                   rows={15}
-                  className="font-mono text-sm"
+                  className="text-sm"
                   {...uploadForm.register("templateContent", {
                     required: "Template content is required",
                     minLength: {
@@ -184,8 +189,8 @@ export default function TemplateCreator() {
                   </p>
                 )}
                 <p className="text-sm text-gray-500">
-                  You can use HTML tags for formatting. The template will be
-                  uploaded as a temporary file.
+                  Enter plain text content only. The template will be
+                  automatically formatted and uploaded as a temporary file.
                 </p>
               </div>
 
