@@ -57,7 +57,7 @@ export default function TemplateCreator() {
   const emailForm = useForm<EmailSendData>({
     defaultValues: {
       to: "",
-      from: "",
+      from: "team@hackpsu.org",
       subject: "",
     },
   });
@@ -68,11 +68,11 @@ export default function TemplateCreator() {
 
   const escapeHtml = (text: string): string => {
     const htmlEscapes: Record<string, string> = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#x27;'
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#x27;",
     };
     return text.replace(/[&<>"']/g, (match) => htmlEscapes[match]);
   };
@@ -80,10 +80,10 @@ export default function TemplateCreator() {
   const convertTextToFile = (content: string, filename: string): File => {
     // First escape HTML special characters to prevent MJML structure issues
     const escapedContent = escapeHtml(content);
-    
+
     // Convert newlines to HTML line breaks for proper email formatting
-    const htmlContent = escapedContent.replace(/\n/g, '<br>');
-    
+    const htmlContent = escapedContent.replace(/\n/g, "<br>");
+
     // Wrap user content in proper MJML structure for injection into base template
     const wrappedContent = `<mj-section>
       <mj-column>
@@ -145,7 +145,7 @@ export default function TemplateCreator() {
         template: uploadedTemplateId,
         subject: data.subject,
         data: {},
-        from: data.from || "noreply@hackpsu.org",
+        from: data.from || "team@hackpsu.org",
       });
 
       toast.success("Email sent successfully!");
@@ -287,7 +287,7 @@ export default function TemplateCreator() {
                     <Input
                       id="from"
                       type="email"
-                      placeholder="your@hackpsu.org"
+                      placeholder="team@hackpsu.org"
                       {...emailForm.register("from", {
                         pattern: {
                           value: EMAIL_REGEX,
