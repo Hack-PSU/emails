@@ -66,11 +66,28 @@ export default function TemplateCreator() {
     return `temporary_${crypto.randomUUID()}`;
   };
 
+  const escapeHtml = (text: string): string => {
+    const htmlEscapes: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;'
+    };
+    return text.replace(/[&<>"']/g, (match) => htmlEscapes[match]);
+  };
+
   const convertTextToFile = (content: string, filename: string): File => {
+    // First escape HTML special characters to prevent MJML structure issues
+    const escapedContent = escapeHtml(content);
+    
+    // Convert newlines to HTML line breaks for proper email formatting
+    const htmlContent = escapedContent.replace(/\n/g, '<br>');
+    
     // Wrap user content in proper MJML structure for injection into base template
     const wrappedContent = `<mj-section>
       <mj-column>
-        <mj-text>${content}</mj-text>
+        <mj-text>${htmlContent}</mj-text>
       </mj-column>
     </mj-section>`;
     const blob = new Blob([wrappedContent], { type: "text/html" });
