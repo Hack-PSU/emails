@@ -56,6 +56,11 @@ export async function apiFetch<T>(
     throw new Error(`Request failed (${response.status}): ${errorBody}`);
   }
 
+  // Handle 204 No Content responses (no body to parse)
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   // Return JSON body
   return (await response.json()) as T;
 }
