@@ -2,26 +2,13 @@
 # Dockerfile
 # ──────────────────────────────────────────────
 
-#########################
-# Local Development Build
-#########################
-FROM node:23-alpine AS dev
-WORKDIR /app
-
-COPY package.json yarn.lock ./
-RUN yarn install
-
-COPY . .
-USER node
-
-
 ######################
 # Build for Production
 ######################
 FROM node:23-alpine AS build
 WORKDIR /app
 
-# ← Declare all your NEXT_PUBLIC_… vars as build-args
+# Build arguments
 ARG NEXT_PUBLIC_BASE_URL_V3
 ARG NEXT_PUBLIC_FIREBASE_API_KEY
 ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
@@ -31,7 +18,7 @@ ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
 ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
 ARG NEXT_PUBLIC_FIREBASE_APP_ID
 
-# ← Export them so Next.js sees them at `yarn build`
+# Export them so Next.js sees them at build
 ENV NEXT_PUBLIC_BASE_URL_V3=${NEXT_PUBLIC_BASE_URL_V3}
 ENV NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
 ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
@@ -41,18 +28,16 @@ ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
 ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
 ENV NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
 
-# copy over deps from dev stage
-COPY --from=dev /app/node_modules ./node_modules
-COPY . .
+# Install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-# build your Next.js project (adjust if your build command is different)
+# Copy source and build
+COPY . .
 RUN yarn build
 
-# production npm install (prune dev dependencies)
-ENV NODE_ENV=production
-RUN yarn install --production && yarn cache clean
-
-USER node
+# Clean dev dependencies and cache
+RUN yarn install --production --frozen-lockfile && yarn cache clean --all
 
 
 ############
@@ -61,30 +46,21 @@ USER node
 FROM node:23-alpine AS production
 WORKDIR /app
 
-# ← Re-declare the same build-args so they’re available at runtime too
-ARG NEXT_PUBLIC_BASE_URL_V3
-ARG NEXT_PUBLIC_FIREBASE_API_KEY
-ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-ARG NEXT_PUBLIC_FIREBASE_DATABASE_URL
-ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID
-ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-ARG NEXT_PUBLIC_FIREBASE_APP_ID
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-# ← Export them to the runtime environment
-ENV NEXT_PUBLIC_BASE_URL_V3=${NEXT_PUBLIC_BASE_URL_V3}
-ENV NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
-ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
-ENV NEXT_PUBLIC_FIREBASE_DATABASE_URL=${NEXT_PUBLIC_FIREBASE_DATABASE_URL}
-ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
-ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
-ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
-ENV NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
+# Copy only necessary files for running
+COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
+COPY --from=build --chown=nextjs:nodejs /app/package.json ./package.json
 
-# copy built output
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/.next    ./.next
-COPY --from=build /app/public   ./public
+USER nextjs
 
-# ← Adjust your start command for Next.js
-CMD ["node_modules/.bin/next", "start", "-p", "3000"]
+EXPOSE 3000
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+CMD ["yarn", "start"]
