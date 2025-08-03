@@ -2,11 +2,21 @@
 # Dockerfile
 # ──────────────────────────────────────────────
 
-######################
-# Build for Production
-######################
-FROM node:23-alpine AS build
+FROM node:23-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+COPY package.json yarn.lock* ./
+RUN yarn --frozen-lockfile --production=false
+
+# Rebuild source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
 # Build arguments
 ARG NEXT_PUBLIC_BASE_URL_V3
@@ -18,7 +28,7 @@ ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
 ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
 ARG NEXT_PUBLIC_FIREBASE_APP_ID
 
-# Export them so Next.js sees them at build
+# Export environment variables for build
 ENV NEXT_PUBLIC_BASE_URL_V3=${NEXT_PUBLIC_BASE_URL_V3}
 ENV NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
 ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
@@ -28,39 +38,35 @@ ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
 ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
 ENV NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
 
-# Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy source and build
-COPY . .
 RUN yarn build
 
-# Clean dev dependencies and cache
-RUN yarn install --production --frozen-lockfile && yarn cache clean --all
-
-
-############
-# Deployment
-############
-FROM node:23-alpine AS production
+# Production image - copy only production files
+FROM base AS runner
 WORKDIR /app
 
-# Create non-root user
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy only necessary files for running
-COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=build --chown=nextjs:nodejs /app/public ./public
-COPY --from=build --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder /app/public ./public
+
+# Set correct permissions and leverage Next.js standalone output
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Copy standalone output and minimal dependencies
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
 EXPOSE 3000
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-CMD ["yarn", "start"]
+CMD ["node", "server.js"]
