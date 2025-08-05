@@ -10,6 +10,7 @@ import {
   User,
   Menu,
   FileText,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,7 @@ const navigation = [
   { name: "Metrics", href: "/sendgrid", icon: BarChart3 },
   { name: "Categories", href: "/sendgrid/advanced", icon: TrendingUp },
   { name: "Forwards", href: "/email", icon: Forward },
+  { name: "Short URLs", href: "/links", icon: Link2 },
   { name: "Send Email", href: "/send", icon: Mail },
   { name: "Create Template", href: "/create-template", icon: FileText },
   { name: "Login", href: "/login", icon: User },
