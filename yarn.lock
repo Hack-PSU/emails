@@ -2043,9 +2043,9 @@
     tailwindcss "4.1.13"
 
 "@tanstack/eslint-plugin-query@^5.81.2":
-  version "5.90.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/eslint-plugin-query/-/eslint-plugin-query-5.90.1.tgz#e513caf398fd2a9d2c2775d25b3d9a511975b39d"
-  integrity sha512-Ki4hl+8ZtnMFZ3amZbQl6sSMUq6L8oSJ14vmi3j5t1/SqXclL5SI/1kcuH36iIk05B/bN5pEOS1PTO3Ut/FbVA==
+  version "5.90.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/eslint-plugin-query/-/eslint-plugin-query-5.90.2.tgz#d6744860121e5f67abd04e6fafa14764bdccfd85"
+  integrity sha512-SqhxxMQu8+0Z8HuiHXh34cztvaOCU5PySwSPvnMKDSWBMbH2jhuCzKZQcFFJ3dZ3lTBCoT54uzUYHGyorT6jqg==
   dependencies:
     "@typescript-eslint/utils" "^8.44.0"
 
