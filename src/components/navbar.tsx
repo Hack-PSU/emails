@@ -11,6 +11,7 @@ import {
   Menu,
   FileText,
   Link2,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,7 @@ const navigation = [
   { name: "Short URLs", href: "/links", icon: Link2 },
   { name: "Send Email", href: "/send", icon: Mail },
   { name: "Create Template", href: "/create-template", icon: FileText },
+  { name: "DMARC", href: "/dmarc", icon: Shield },
   { name: "Login", href: "/login", icon: User },
 ];
 
