@@ -1,6 +1,6 @@
 'use client';
 
-import { ParsedDmarcReport, DmarcRecord } from '@/common/dmarc/types';
+import { ParsedDmarcReport } from '@/common/dmarc/types';
 import {
   Dialog,
   DialogContent,

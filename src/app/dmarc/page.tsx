@@ -99,7 +99,7 @@ export default function DmarcDashboard() {
               <ol className="list-decimal list-inside text-sm text-gray-700 space-y-2">
                 <li>Enable 2FA on your Google account</li>
                 <li>Generate an app password at <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Account Settings</a></li>
-                <li>Create a Gmail label called "DMARC"</li>
+                <li>Create a Gmail label called &quot;DMARC&quot;</li>
                 <li>Add the credentials to your .env file</li>
                 <li>Restart the development server</li>
               </ol>

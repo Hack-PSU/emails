@@ -1,5 +1,5 @@
 import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app';
-import { getFirestore as getClientFirestore, collection, doc, getDoc, setDoc, getDocs, deleteDoc, query, where, orderBy, Timestamp, limit } from 'firebase/firestore';
+import { getFirestore as getClientFirestore, collection, doc, getDoc, setDoc, getDocs, deleteDoc, query, where, orderBy, Timestamp } from 'firebase/firestore';
 import { ParsedDmarcReport } from './types';
 import { getEnvironment } from '../config/environment';
 
@@ -27,7 +27,7 @@ export class DmarcFirestoreService {
   /**
    * Remove undefined values from an object recursively
    */
-  private removeUndefined(obj: any): any {
+  private removeUndefined(obj: unknown): unknown {
     if (obj === null || obj === undefined) {
       return null;
     }
@@ -37,10 +37,11 @@ export class DmarcFirestoreService {
     }
 
     if (typeof obj === 'object' && !(obj instanceof Date)) {
-      const cleaned: any = {};
-      for (const key in obj) {
-        if (obj[key] !== undefined) {
-          cleaned[key] = this.removeUndefined(obj[key]);
+      const cleaned: Record<string, unknown> = {};
+      const objectWithIndex = obj as Record<string, unknown>;
+      for (const key in objectWithIndex) {
+        if (objectWithIndex[key] !== undefined) {
+          cleaned[key] = this.removeUndefined(objectWithIndex[key]);
         }
       }
       return cleaned;
@@ -77,15 +78,15 @@ export class DmarcFirestoreService {
   /**
    * Convert Firestore Timestamp to Date
    */
-  private toDate(timestamp: any): Date {
+  private toDate(timestamp: unknown): Date {
     if (timestamp instanceof Date) {
       return timestamp;
     }
-    if (timestamp && typeof timestamp.toDate === 'function') {
-      return timestamp.toDate();
+    if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp && typeof timestamp.toDate === 'function') {
+      return (timestamp as { toDate: () => Date }).toDate();
     }
-    if (timestamp && timestamp.seconds) {
-      return new Date(timestamp.seconds * 1000);
+    if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
+      return new Date((timestamp as { seconds: number }).seconds * 1000);
     }
     return new Date();
   }

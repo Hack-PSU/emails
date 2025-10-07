@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { DmarcConfigService } from '@/common/dmarc/config-service';
 
 const configService = new DmarcConfigService();
@@ -33,7 +33,7 @@ export async function GET() {
 }
 
 // POST: Configuration info (env variables should be set directly)
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     return NextResponse.json({
       success: false,

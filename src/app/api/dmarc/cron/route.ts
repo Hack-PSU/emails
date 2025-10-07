@@ -110,7 +110,7 @@ export async function GET() {
       totalReports: count,
       lastChecked: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to check status' },
       { status: 500 }

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DmarcFirestoreService } from '@/common/dmarc/firestore';
-import { DmarcAnalyzer } from '@/common/dmarc/analyzer';
 
 const firestoreService = new DmarcFirestoreService();
-const analyzer = new DmarcAnalyzer();
 
 // GET: Retrieve DMARC reports with optional filtering
 export async function GET(request: NextRequest) {

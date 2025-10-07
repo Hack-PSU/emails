@@ -138,7 +138,7 @@ export class DmarcParser {
 
       // More lenient validation - just need XML structure with report elements
       return hasFeedback && (hasMetadata || hasPolicy);
-    } catch (error) {
+    } catch {
       return false;
     }
   }

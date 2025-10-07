@@ -1,5 +1,4 @@
 import { ParsedDmarcReport, DmarcReportStats, DmarcRecord } from './types';
-import { countryCodesList } from 'country-codes-list';
 
 export class DmarcAnalyzer {
   /**
@@ -113,7 +112,7 @@ export class DmarcAnalyzer {
   /**
    * Get country code from IP address (simplified - would need IP geolocation service)
    */
-  private getCountryFromIP(ip: string): string | undefined {
+  private getCountryFromIP(_ip: string): string | undefined {
     // This is a placeholder - in production, use an IP geolocation service
     // like ipapi.co, ip-api.com, or maxmind
     return undefined;

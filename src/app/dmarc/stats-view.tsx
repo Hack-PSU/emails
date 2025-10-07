@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -32,18 +32,23 @@ const COLORS = {
   reject: '#dc2626',
 };
 
+interface DomainSummary {
+  domain: string;
+  totalMessages: number;
+  dmarcPass: number;
+  spfPass: number;
+  dkimPass: number;
+  passRate: number;
+}
+
 export function DmarcStatsView() {
   const [stats, setStats] = useState<DmarcReportStats | null>(null);
-  const [domainSummary, setDomainSummary] = useState<any[]>([]);
+  const [domainSummary, setDomainSummary] = useState<DomainSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
-  useEffect(() => {
-    fetchStats();
-  }, [startDate, endDate]);
-
-  const fetchStats = async () => {
+  const fetchStats = React.useCallback(async () => {
     setIsLoading(true);
     try {
       let url = '/api/dmarc/stats';
@@ -66,7 +71,11 @@ export function DmarcStatsView() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const handleClearDates = () => {
     setStartDate(undefined);
@@ -334,7 +343,7 @@ export function DmarcStatsView() {
                   </tr>
                 </thead>
                 <tbody>
-                  {domainSummary.slice(0, 10).map((domain: any, idx: number) => (
+                  {domainSummary.slice(0, 10).map((domain, idx: number) => (
                     <tr key={idx} className="border-b hover:bg-gray-50">
                       <td className="p-2 font-mono text-xs">{domain.domain}</td>
                       <td className="text-right p-2">{domain.totalMessages.toLocaleString()}</td>
@@ -373,7 +382,7 @@ export function DmarcStatsView() {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.topFailedIPs.slice(0, 20).map((ip: any, idx: number) => (
+                  {stats.topFailedIPs.slice(0, 20).map((ip, idx: number) => (
                     <tr key={idx} className="border-b hover:bg-gray-50">
                       <td className="p-2">{idx + 1}</td>
                       <td className="p-2 font-mono text-xs">{ip.ip}</td>

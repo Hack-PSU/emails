@@ -1,6 +1,7 @@
 import Imap from 'imap';
 import { simpleParser } from 'mailparser';
 import AdmZip from 'adm-zip';
+import * as zlib from 'zlib';
 import { GmailConfig } from './types';
 
 export class GmailService {
@@ -36,7 +37,17 @@ export class GmailService {
         tlsOptions: { rejectUnauthorized: false },
       });
 
-      const emails: any[] = [];
+      const emails: Array<{
+        id: string;
+        subject: string;
+        from: string;
+        date: Date;
+        attachments: Array<{
+          filename: string;
+          content: Buffer;
+          contentType: string;
+        }>;
+      }> = [];
 
       imap.once('ready', () => {
         imap.openBox('INBOX', true, (err) => {
@@ -66,9 +77,9 @@ export class GmailService {
               });
 
               fetch.on('message', (msg) => {
-                msg.on('body', async (stream) => {
-                  try {
-                    const parsed = await simpleParser(stream as any);
+                msg.on('body', (stream) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  simpleParser(stream as any).then((parsed) => {
                     if (!parsed) {
                       console.error('Error parsing email: no parsed data');
                       return;
@@ -87,13 +98,13 @@ export class GmailService {
                       date: parsed.date || new Date(),
                       attachments,
                     });
-                  } catch (err: any) {
+                  }).catch((err: Error) => {
                     console.error('Error parsing email:', err);
-                  }
+                  });
                 });
               });
 
-              fetch.once('error', (err: any) => {
+              fetch.once('error', (err) => {
                 reject(err);
               });
 
@@ -105,7 +116,7 @@ export class GmailService {
         });
       });
 
-      imap.once('error', (err: any) => {
+      imap.once('error', (err: Error) => {
         reject(err);
       });
 
@@ -142,7 +153,6 @@ export class GmailService {
 
       // Handle GZIP files (.gz and .xml.gz)
       if (filename.endsWith('.gz') || filename.endsWith('.xml.gz')) {
-        const zlib = require('zlib');
         const uncompressed = zlib.gunzipSync(attachment);
         const xmlContent = uncompressed.toString('utf8');
         console.log(`Extracted XML from GZIP: ${filename} (${xmlContent.length} bytes)`);
@@ -183,7 +193,7 @@ export class GmailService {
         resolve(true);
       });
 
-      imap.once('error', (err) => {
+      imap.once('error', (err: Error) => {
         reject(err);
       });
 

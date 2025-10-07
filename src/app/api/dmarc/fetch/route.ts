@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { GmailService } from '@/common/dmarc/gmail-service';
 import { DmarcParser } from '@/common/dmarc/parser';
 import { DmarcFirestoreService } from '@/common/dmarc/firestore';
@@ -9,7 +9,7 @@ const configService = new DmarcConfigService();
 const parser = new DmarcParser();
 
 // POST: Fetch and process DMARC reports from Gmail
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Get Gmail config from environment
     const config = configService.getGmailConfig();
