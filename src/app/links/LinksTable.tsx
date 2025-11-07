@@ -28,8 +28,10 @@ import {
   TrashIcon,
   ExternalLinkIcon,
   CopyIcon,
+  PencilIcon,
 } from "lucide-react";
 import CreateLinkDialog from "./CreateLinkDialog";
+import EditLinkDialog from "./EditLinkDialog";
 import ShlinkService from "@/common/shlink/service";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -43,6 +45,8 @@ export default function LinksTable({ links, onLinksChange }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [editingLink, setEditingLink] = useState<ShlinkShortUrl | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const handleDelete = async (shortCode: string, domain?: string) => {
     setDeleting(shortCode);
@@ -70,6 +74,11 @@ export default function LinksTable({ links, onLinksChange }: Props) {
     } catch (err) {
       toast.error("Failed to copy to clipboard");
     }
+  };
+
+  const handleEdit = (link: ShlinkShortUrl) => {
+    setEditingLink(link);
+    setEditDialogOpen(true);
   };
 
   const columns = useMemo<ColumnDef<ShlinkShortUrl>[]>(
@@ -221,15 +230,25 @@ export default function LinksTable({ links, onLinksChange }: Props) {
         cell: ({ row }) => {
           const { shortCode, domain } = row.original;
           return (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleDelete(shortCode, domain || undefined)}
-              disabled={deleting === shortCode}
-              className="text-red-600 hover:text-red-700"
-            >
-              <TrashIcon className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEdit(row.original)}
+                className="text-blue-600 hover:text-blue-700"
+              >
+                <PencilIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleDelete(shortCode, domain || undefined)}
+                disabled={deleting === shortCode}
+                className="text-red-600 hover:text-red-700"
+              >
+                <TrashIcon className="h-4 w-4" />
+              </Button>
+            </div>
           );
         },
       },
@@ -265,6 +284,13 @@ export default function LinksTable({ links, onLinksChange }: Props) {
           }}
         />
       </div>
+
+      <EditLinkDialog
+        link={editingLink}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onLinksChange={onLinksChange}
+      />
 
       <div className="rounded-lg border">
         <Table>
