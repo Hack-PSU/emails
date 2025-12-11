@@ -2368,9 +2368,9 @@
   integrity sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==
 
 "@types/imap@^0.8.42":
-  version "0.8.42"
-  resolved "https://registry.yarnpkg.com/@types/imap/-/imap-0.8.42.tgz#432f250e82ef005d0754f5182e7d7aee5b99426f"
-  integrity sha512-FusePG9Cp2GYN6OLow9xBCkjznFkAR7WCz0Fm+j1p/ER6C8V8P71DtjpSmwrZsS7zekCeqdTPHEk9N5OgPwcsg==
+  version "0.8.43"
+  resolved "https://registry.yarnpkg.com/@types/imap/-/imap-0.8.43.tgz#36067426239db252b3ebd7e1dab51a4c4c3349d1"
+  integrity sha512-POPoqrDax9mxM2N4ITZYCWaFtg1ORVfzJe4S7xwSh9aHawdEb7FwWTJYiAhzIvWp7DM+6BajnzYOwZ1BUrqtow==
   dependencies:
     "@types/node" "*"
 
@@ -2416,9 +2416,9 @@
   integrity sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==
 
 "@types/node@*":
-  version "24.10.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.10.0.tgz#6b79086b0dfc54e775a34ba8114dcc4e0221f31f"
-  integrity sha512-qzQZRBqkFsYyaSWXuEHc2WR9c0a0CXwiE5FWUvn7ZM+vdy1uZLfCunD38UzhuB7YN/J11ndbDBcTmOdxJo9Q7A==
+  version "25.0.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.0.0.tgz#c0e0022c3c7b41635c49322e6b3a0279fffa7d62"
+  integrity sha512-rl78HwuZlaDIUSeUKkmogkhebA+8K1Hy7tddZuJ3D0xV8pZSfsYGTsliGUol1JPzu9EKnTxPC4L1fiWouStRew==
   dependencies:
     undici-types "~7.16.0"
 
