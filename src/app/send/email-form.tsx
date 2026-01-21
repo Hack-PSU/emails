@@ -91,6 +91,32 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
     ],
   },
   {
+    id: "organizer-reject",
+    label: "Organizer Application Rejection",
+    defaultSubject: "HackPSU Organizer Application Update",
+    defaultFrom: "team@hackpsu.org",
+    fields: [
+      {
+        name: "firstName",
+        label: "Recipient First Name",
+        placeholder: "Lucas",
+        required: true,
+      },
+      {
+        name: "team",
+        label: "Team Name",
+        placeholder: "Logistics",
+        required: true,
+      },
+      {
+        name: "fromPerson",
+        label: "From Person",
+        placeholder: "Joe Boppell",
+        required: true,
+      }
+    ],
+  },
+  {
     id: "repeat-sponsor",
     label: "Repeat Sponsor Outreach",
     defaultSubject: "Sponsorship Opportunity with HackPSU",
