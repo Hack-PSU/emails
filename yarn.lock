@@ -3450,9 +3450,9 @@ commander@^11.1.0:
   integrity sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==
 
 commander@^14.0.0:
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-14.0.2.tgz#b71fd37fe4069e4c3c7c13925252ada4eba14e8e"
-  integrity sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-14.0.3.tgz#425d79b48f9af82fcd9e4fc1ea8af6c5ec07bbc2"
+  integrity sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -7055,9 +7055,9 @@ setprototypeof@~1.2.0:
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
 shadcn@^3.0.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/shadcn/-/shadcn-3.8.0.tgz#fc781ea3186a1bc63f96f1ca3a71ea7e0d70f697"
-  integrity sha512-PoMRpAYXD0jwppcZgoMwKx/8OKaHluWrmd9qEvWSiuRWJjPM/T9h0TveTASSVrghFR0/7ElftrfJPNh1WMuG6A==
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/shadcn/-/shadcn-3.8.1.tgz#2f1dc2df7a17d0a46eba65237a2d282b5d46d32e"
+  integrity sha512-3bu1gxtBvFrFnf55WzLX9QQuM6qik1sv0nXum1bhwgAfcJHDAENBPq2AYDaJaRlskETBqLH/8iacVhpPyyTr3A==
   dependencies:
     "@antfu/ni" "^25.0.0"
     "@babel/core" "^7.28.0"
@@ -7600,9 +7600,9 @@ type-check@^0.4.0, type-check@~0.4.0:
     prelude-ls "^1.2.1"
 
 type-fest@^5.2.0:
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-5.4.2.tgz#7fb42d949a9956f77dff2a6157c935b40904c5c9"
-  integrity sha512-FLEenlVYf7Zcd34ISMLo3ZzRE1gRjY1nMDTp+bQRBiPsaKyIW8K3Zr99ioHDUgA9OGuGGJPyYpNcffGmBhJfGg==
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-5.4.3.tgz#b4c7e028da129098911ee2162a0c30df8a1be904"
+  integrity sha512-AXSAQJu79WGc79/3e9/CR77I/KQgeY1AhNvcShIH4PTcGYyC4xv6H4R4AUOwkPS5799KlVDAu8zExeCrkGquiA==
   dependencies:
     tagged-tag "^1.0.0"
 
