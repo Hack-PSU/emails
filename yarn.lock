@@ -1298,7 +1298,7 @@
   resolved "https://registry.yarnpkg.com/@js-sdsl/ordered-map/-/ordered-map-4.4.2.tgz#9299f82874bab9e4c7f9c48d865becbfe8d6907c"
   integrity sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==
 
-"@modelcontextprotocol/sdk@^1.17.2":
+"@modelcontextprotocol/sdk@^1.26.0":
   version "1.26.0"
   resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.26.0.tgz#5b35d73062125f126cc70b0be83cbab53bcdde74"
   integrity sha512-Y5RmPncpiDtTXDbLKswIJzTqu2hyBKxTNsgKqKclDbhIgg1wgtf1fRuvxgTnRfcnxtvvgbIEcqUOzZrJ6iSReg==
@@ -3251,9 +3251,9 @@ caniuse-lite@^1.0.30001579:
   integrity sha512-pB68nIHmbN6L/4C6MH1DokyR3bYqFwjaSs/sWDHGj4CTcFtQUQMuJftVwWkXq7mNWOybD3KhUv3oWHoGxgP14Q==
 
 caniuse-lite@^1.0.30001759:
-  version "1.0.30001767"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001767.tgz#0279c498e862efb067938bba0a0aabafe8d0b730"
-  integrity sha512-34+zUAMhSH+r+9eKmYG+k2Rpt8XttfE4yXAjoZvkAPs15xcYQhyBYdalJ65BzivAvGRMViEjy6oKr/S91loekQ==
+  version "1.0.30001769"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001769.tgz#1ad91594fad7dc233777c2781879ab5409f7d9c2"
+  integrity sha512-BCfFL1sHijQlBGWBMuJyhZUhzo7wer5sVj9hqekB/7xn0Ypy+pER/edCYQm4exbXj4WiySGp40P8UuTh6w1srg==
 
 chalk@^4.0.0:
   version "4.1.2"
@@ -3833,9 +3833,9 @@ domutils@^3.0.1:
     domhandler "^5.0.3"
 
 dotenv@^17.2.1:
-  version "17.2.3"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.2.3.tgz#ad995d6997f639b11065f419a22fabf567cdb9a2"
-  integrity sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==
+  version "17.2.4"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.2.4.tgz#b5a0e2f015e0be287a5330a90bf0e804606504c2"
+  integrity sha512-mudtfb4zRB4bVvdj0xRo+e6duH1csJRM8IukBqfTRvHotn9+LBXB8ynAidP9zHqoRC/fsllXgk4kCKlR21fIhw==
 
 dunder-proto@^1.0.0, dunder-proto@^1.0.1:
   version "1.0.1"
@@ -4970,9 +4970,9 @@ hoist-non-react-statics@^3.3.1:
     react-is "^16.7.0"
 
 hono@^4.11.4:
-  version "4.11.7"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.11.7.tgz#f5b8d0b0b503ef0d913a246012dda52ea23dbe53"
-  integrity sha512-l7qMiNee7t82bH3SeyUCt9UF15EVmaBvsppY2zQtrbIhl/yzBTny+YUxsVjSjQ6gaqaeVtZmGocom8TzBlA4Yw==
+  version "4.11.8"
+  resolved "https://registry.yarnpkg.com/hono/-/hono-4.11.8.tgz#5a056734a75ea3cad86b4d1a6f7e562a214e68e9"
+  integrity sha512-eVkB/CYCCei7K2WElZW9yYQFWssG0DhaDhVvr7wy5jJ22K+ck8fWW0EsLpB0sITUTvPnc97+rrbQqIr5iqiy9Q==
 
 html-entities@^2.5.2:
   version "2.6.0"
@@ -5439,9 +5439,9 @@ isexe@^2.0.0:
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
 isexe@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/isexe/-/isexe-3.1.1.tgz#4a407e2bd78ddfb14bea0c27c6f7072dde775f0d"
-  integrity sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/isexe/-/isexe-3.1.2.tgz#08e5349db03ff0654f3b3efe798f94aa4bda4f8f"
+  integrity sha512-mIcis6w+JiQf3P7t7mg/35GKB4T1FQsBOtMIvuKw4YErj5RjtbhcTd5/I30fmkmGMwvI0WlzSNN+27K0QCMkAw==
 
 iterator.prototype@^1.1.4:
   version "1.1.5"
@@ -6971,9 +6971,9 @@ setprototypeof@~1.2.0:
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
 shadcn@^3.0.0:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/shadcn/-/shadcn-3.8.3.tgz#f364accd76c8fe97f3db3082fefc171b3f234d30"
-  integrity sha512-4cq123nBeWJWWhMT2wG7ddoix5jIfPBvybjbS+xwc9gtQbhmi5X6RY8FjR1OhUSN4TYqV2O5dmJ9cl0/eBHIfg==
+  version "3.8.4"
+  resolved "https://registry.yarnpkg.com/shadcn/-/shadcn-3.8.4.tgz#d66532b3b2183ed393a1645bafbccc9ddd7daa83"
+  integrity sha512-pSad/m1+PGzB0aLsRBV0EkyGg9al1nJqYUuucg6d8v8xZspPZ5/ehGNEp5M4b1KQYqdO5/gGPbkhVbgmXqG9Pw==
   dependencies:
     "@antfu/ni" "^25.0.0"
     "@babel/core" "^7.28.0"
@@ -6981,7 +6981,7 @@ shadcn@^3.0.0:
     "@babel/plugin-transform-typescript" "^7.28.0"
     "@babel/preset-typescript" "^7.27.1"
     "@dotenvx/dotenvx" "^1.48.4"
-    "@modelcontextprotocol/sdk" "^1.17.2"
+    "@modelcontextprotocol/sdk" "^1.26.0"
     "@types/validate-npm-package-name" "^4.0.2"
     browserslist "^4.26.2"
     commander "^14.0.0"
