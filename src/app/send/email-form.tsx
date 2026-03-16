@@ -166,6 +166,13 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { name: "yourName", label: "Your Name", placeholder: "Your full name" },
     ],
   },
+  {
+    id: "participant-rsvp-extension",
+    label: "Participant RSVP Extension",
+    defaultSubject: "HackPSU RSVP Deadline Extended by 2 days!",
+    defaultFrom: "team@hackpsu.org",
+    fields: [],
+  }
 ];
 
 /* ----------------------- TYPES & HELPERS ----------------------- */
