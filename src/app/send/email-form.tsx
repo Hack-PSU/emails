@@ -172,6 +172,13 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
     defaultSubject: "HackPSU RSVP Deadline Extended by 2 days!",
     defaultFrom: "team@hackpsu.org",
     fields: [],
+  },
+  {
+    id: "hackers-guide",
+    label: "Hacker's Guide Announcement",
+    defaultSubject: "HackPSU This Weekend: Important Details",
+    defaultFrom: "team@hackpsu.org",
+    fields: [],
   }
 ];
 
