@@ -3395,9 +3395,9 @@ cosmiconfig@^9.0.0:
     parse-json "^5.2.0"
 
 country-codes-list@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/country-codes-list/-/country-codes-list-2.0.0.tgz#162c49028a0a9fe64503ed146980e0bb8529c170"
-  integrity sha512-KZqq/LBdCD76hQCa6nOx0bA/nIjYly1OtV8+Bbt/4SW+mJEqGk7oZHjUj7PRrV0gXJJKs6Tv2cIntFdofBByvA==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/country-codes-list/-/country-codes-list-2.1.0.tgz#cda9e4965e8cdfc1cf7b8ae73e55e1d16cf163f6"
+  integrity sha512-YKZY8roDLQyG3VKcDRMRvtsO6/s/XUjEpEyAU/LkPEaioc65G4hrzwkmR6PpNY9dzbduw2i5LcHM9jwbA8zEng==
 
 cross-spawn@^7.0.3, cross-spawn@^7.0.5, cross-spawn@^7.0.6:
   version "7.0.6"
