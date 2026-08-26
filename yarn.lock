@@ -2156,10 +2156,10 @@
     domelementtype "~2.3.0"
     domhandler "~5.0.3"
 
-"@shlinkio/shlink-js-sdk@^2.2.1":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@shlinkio/shlink-js-sdk/-/shlink-js-sdk-2.2.2.tgz#0e75a40c93f71ab8bdf3624b960ac79c3f622618"
-  integrity sha512-AKNt5C12yR5rUIKcAqMi3l84kDawoA8B/XvteljazPLoyI0CX54wpX+A4uPvKWLQiNM59LSGXeEQPA4CvzrT1Q==
+"@shlinkio/shlink-js-sdk@^3.0.0":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@shlinkio/shlink-js-sdk/-/shlink-js-sdk-3.2.1.tgz#c392639da7d0c63505372f209f311de2da75dd52"
+  integrity sha512-XtgiOsJfpGhGN2MyZJ4gy2zqgzHS70z/36M+ceKpVgNzhevHXU0QVIcpE7JGixnqHBqRVn8dI5O3L1DMgSnIIQ==
 
 "@sindresorhus/merge-streams@^4.0.0":
   version "4.0.0"
