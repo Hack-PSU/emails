@@ -1126,6 +1126,20 @@
     protobufjs "^7.5.5"
     yargs "^17.7.2"
 
+"@hackpsu/api-client@1.0.11":
+  version "1.0.11"
+  resolved "https://us-east4-npm.pkg.dev/hackpsu-408118/npm/@hackpsu/api-client/-/@hackpsu/api-client-1.0.11.tgz#8b8e1c75ecaed977facc2fbe3a2bbc49f30e09b1"
+  integrity sha512-zFY5DivQ+Q38JHLbjaDxVfE44KjqvAXdtPu/j6oBTjKKjaH9QA3UWeoRT6RrsQwtGbFBpAlGNBo2A54/dlXuKQ==
+
+"@hackpsu/react-sdk@^1.0.11":
+  version "1.0.11"
+  resolved "https://us-east4-npm.pkg.dev/hackpsu-408118/npm/@hackpsu/react-sdk/-/@hackpsu/react-sdk-1.0.11.tgz#6d349fdafc934392db5311f58451327818ae0e85"
+  integrity sha512-LQldEO9TqEGsZKsjFkI/Ojk4koI49Z424UdUAS4JY1rHMA3sLU7XCiY035HAZYM0FlSHmePE8duO8+L+caBw9A==
+  dependencies:
+    "@hackpsu/api-client" "1.0.11"
+    firebase "^12.0.0"
+    jwt-decode "^4.0.0"
+
 "@hono/node-server@^1.19.9":
   version "1.19.9"
   resolved "https://registry.yarnpkg.com/@hono/node-server/-/node-server-1.19.9.tgz#8f37119b1acf283fd3f6035f3d1356fdb97a09ac"

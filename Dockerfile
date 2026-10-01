@@ -9,7 +9,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json yarn.lock* ./
+COPY package.json yarn.lock* .npmrc ./
 RUN yarn --frozen-lockfile --production=false
 
 # Rebuild source code only when needed

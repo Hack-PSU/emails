@@ -29,9 +29,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Mail, Eye, Send, Upload } from "lucide-react";
 import { Toaster, toast } from "sonner";
 
-import { sendMail, getTemplatePreview } from "@/common/api/mail";
-import { getOrganizer } from "@/common/api/organizer";
-import { useFirebase } from "@/common/context/FirebaseProvider";
+import {
+  mailGetTemplatePreview,
+  mailSendMail,
+  organizerGetOne,
+  useFirebase,
+} from "@hackpsu/react-sdk";
 
 /* ----------------------- TEMPLATE CONFIG ----------------------- */
 
@@ -113,7 +116,7 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
         label: "From Person",
         placeholder: "Joe Boppell",
         required: true,
-      }
+      },
     ],
   },
   {
@@ -179,7 +182,7 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
     defaultSubject: "HackPSU This Weekend: Important Details",
     defaultFrom: "team@hackpsu.org",
     fields: [],
-  }
+  },
 ];
 
 /* ----------------------- TYPES & HELPERS ----------------------- */
@@ -304,7 +307,7 @@ export default function EmailForm() {
     const loadOrganizerData = async () => {
       if (user?.uid) {
         try {
-          const organizer = await getOrganizer(user.uid);
+          const organizer = await organizerGetOne(user.uid);
           const fullName = `${organizer.firstName} ${organizer.lastName}`;
           if (selectedTemplate.fields.some((f) => f.name === "yourName")) {
             setValue("yourName", fullName, { shouldDirty: true });
@@ -331,7 +334,7 @@ export default function EmailForm() {
     try {
       const formData = getValues();
       const templateData = pickTemplateData(formData, selectedTemplate.fields);
-      const preview = await getTemplatePreview(selectedTemplate.id, {
+      const preview = await mailGetTemplatePreview(selectedTemplate.id, {
         data: templateData,
       });
       setState((p) => ({
@@ -355,7 +358,7 @@ export default function EmailForm() {
     try {
       const templateData = pickTemplateData(data, selectedTemplate.fields);
 
-      await sendMail({
+      await mailSendMail({
         to: [data.to],
         template: selectedTemplate.id,
         subject: data.subject,
@@ -463,7 +466,7 @@ export default function EmailForm() {
       );
 
       try {
-        await sendMail({
+        await mailSendMail({
           to: [to],
           template: selectedTemplate.id,
           subject: row.subject || defaultVals.subject,

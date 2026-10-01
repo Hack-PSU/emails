@@ -24,9 +24,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDownIcon, TrashIcon } from "lucide-react";
 import ForwardingDialog from "./ForwardingDialog";
-import { useAllOrganizers } from "@/common/api/organizer/hook";
 import { toast } from "sonner";
-import { sendMail } from "@/common/api/mail";
+import { mailSendMail, useOrganizerGetAll } from "@hackpsu/react-sdk";
 
 interface Props {
   entries: Entry[];
@@ -40,7 +39,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [deleting, setDeleting] = useState(false);
 
-  const { data: organizers = [] } = useAllOrganizers();
+  const { data: organizers = [] } = useOrganizerGetAll();
 
   // Create lowercase email lookup for names
   const nameLookup = useMemo(() => {
@@ -70,7 +69,7 @@ export default function EntriesTable({ entries, onEntriesChange }: Props) {
         throw new Error("Failed to delete forwarding rule");
       }
 
-      await sendMail({
+      await mailSendMail({
         to: ["technology@hackpsu.org"],
         subject: "Email Forwarding Deleted",
         template: "email-forwarding-updated",

@@ -24,9 +24,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Entry } from "./types";
 import { cn } from "@/lib/utils";
-import { useAllOrganizers } from "@/common/api/organizer/hook";
 import { toast } from "sonner";
-import { sendMail } from "@/common/api/mail";
+import { mailSendMail, useOrganizerGetAll } from "@hackpsu/react-sdk";
 
 interface ForwardingDialogProps {
   entries: Entry[];
@@ -54,7 +53,7 @@ export default function ForwardingDialog({
     [],
   );
 
-  const { data: organizers = [] } = useAllOrganizers();
+  const { data: organizers = [] } = useOrganizerGetAll();
 
   // Create lowercase email lookup for organizers
   const organizerEmails = useMemo(
@@ -113,7 +112,7 @@ export default function ForwardingDialog({
         if (!response.ok) {
           throw new Error(`Failed to add forwarding rule for ${addr}`);
         }
-        await sendMail({
+        await mailSendMail({
           to: ["technology@hackpsu.org"],
           subject: "Email Forwarding Added",
           template: "email-forwarding-updated",

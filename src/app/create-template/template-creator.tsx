@@ -18,10 +18,10 @@ import { Loader2, Upload, Mail, Eye, Send, FileText } from "lucide-react";
 import { Toaster, toast } from "sonner";
 
 import {
-  useUploadTemplate,
-  useSendMail,
-  useTemplatePreview,
-} from "@/common/api/mail";
+  useMailUploadTemplate,
+  useMailSendMail,
+  useMailGetTemplatePreview,
+} from "@hackpsu/react-sdk";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -44,9 +44,9 @@ export default function TemplateCreator() {
   );
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
 
-  const uploadMutation = useUploadTemplate();
-  const sendMutation = useSendMail();
-  const previewMutation = useTemplatePreview(uploadedTemplateId || "");
+  const uploadMutation = useMailUploadTemplate();
+  const sendMutation = useMailSendMail();
+  const previewMutation = useMailGetTemplatePreview();
 
   const uploadForm = useForm<TemplateUploadData>({
     defaultValues: {
@@ -110,8 +110,10 @@ export default function TemplateCreator() {
 
     try {
       await uploadMutation.mutateAsync({
-        name: templateId,
-        template: templateFile,
+        data: {
+          name: templateId,
+          template: templateFile,
+        },
       });
 
       setUploadedTemplateId(templateId);
@@ -127,7 +129,8 @@ export default function TemplateCreator() {
 
     try {
       const result = await previewMutation.mutateAsync({
-        data: {},
+        templateId: uploadedTemplateId,
+        data: { data: {} },
       });
       setPreviewHtml(result.html);
       toast.success("Preview generated!");
@@ -141,11 +144,13 @@ export default function TemplateCreator() {
 
     try {
       await sendMutation.mutateAsync({
-        to: [data.to],
-        template: uploadedTemplateId,
-        subject: data.subject,
-        data: {},
-        from: data.from || "team@hackpsu.org",
+        data: {
+          to: [data.to],
+          template: uploadedTemplateId,
+          subject: data.subject,
+          data: {},
+          from: data.from || "team@hackpsu.org",
+        },
       });
 
       toast.success("Email sent successfully!");
