@@ -85,3 +85,30 @@ export interface GmailConfig {
   imapPort: number;
   label: string;
 }
+
+export interface GmailCursor {
+  uidValidity: number;
+  lastUid: number;
+}
+
+export interface FetchedEmail {
+  uid: number;
+  id: string;
+  subject: string;
+  from: string;
+  date: Date;
+  attachments: Array<{
+    filename: string;
+    content: Buffer;
+    contentType: string;
+  }>;
+}
+
+export interface GmailBatch {
+  emails: FetchedEmail[];
+  uidValidity: number;
+  /** Highest UID covered by this batch; the next cursor. */
+  lastUid: number;
+  /** Labelled messages still pending after this batch. */
+  remaining: number;
+}

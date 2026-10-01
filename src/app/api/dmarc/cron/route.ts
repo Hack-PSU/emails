@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GmailService } from '@/common/dmarc/gmail-service';
-import { DmarcParser } from '@/common/dmarc/parser';
 import { DmarcFirestoreService } from '@/common/dmarc/firestore';
 import { DmarcConfigService } from '@/common/dmarc/config-service';
+import { processNextBatch } from '@/common/dmarc/ingest';
 
 const firestoreService = new DmarcFirestoreService();
 const configService = new DmarcConfigService();
-const parser = new DmarcParser();
+
+/** Stop starting new batches after this long, well inside the request timeout. */
+const CRON_TIME_BUDGET_MS = 4 * 60 * 1000;
 
 /**
  * Automated DMARC report fetching endpoint
@@ -38,55 +39,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize Gmail service
-    const gmailService = new GmailService(config);
+    // Work through batches until caught up or out of time. Whatever is left
+    // stays behind the cursor and is picked up on the next run.
+    const startedAt = Date.now();
+    const stats = { totalEmails: 0, processed: 0, skipped: 0, errors: 0, remaining: 0 };
+    let hasMore = true;
 
-    // Fetch and process emails
-    const emails = await gmailService.fetchEmailsWithLabel();
-
-    let processedCount = 0;
-    let skippedCount = 0;
-    let errorCount = 0;
-
-    for (const email of emails) {
-      for (const attachment of email.attachments) {
-        const xmlContent = gmailService.extractXmlFromAttachment(
-          attachment.content,
-          attachment.filename
-        );
-
-        if (!xmlContent || !parser.isValidDmarcReport(xmlContent)) {
-          continue;
-        }
-
-        const parsedReport = await parser.parseReport(xmlContent, email.id);
-
-        if (!parsedReport) {
-          errorCount++;
-          continue;
-        }
-
-        const exists = await firestoreService.reportExists(parsedReport.id);
-
-        if (exists) {
-          skippedCount++;
-          continue;
-        }
-
-        await firestoreService.saveReport(parsedReport);
-        processedCount++;
-      }
+    while (hasMore && Date.now() - startedAt < CRON_TIME_BUDGET_MS) {
+      const batch = await processNextBatch(config);
+      stats.totalEmails += batch.totalEmails;
+      stats.processed += batch.processed;
+      stats.skipped += batch.skipped;
+      stats.errors += batch.errors;
+      stats.remaining = batch.remaining;
+      hasMore = batch.hasMore;
     }
 
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
-      stats: {
-        totalEmails: emails.length,
-        processed: processedCount,
-        skipped: skippedCount,
-        errors: errorCount,
-      },
+      stats: { ...stats, hasMore },
     });
   } catch (error) {
     console.error('Error in DMARC cron job:', error);

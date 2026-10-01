@@ -33,24 +33,47 @@ export default function DmarcDashboard() {
 
   const handleFetchReports = async () => {
     setIsFetching(true);
+    const toastId = toast.loading('Fetching reports...');
+    const totals = { totalEmails: 0, processed: 0, skipped: 0 };
+
     try {
-      const response = await fetch('/api/dmarc/fetch', {
-        method: 'POST',
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('Reports fetched successfully', {
-          description: `Processed: ${data.stats.processed}, Skipped: ${data.stats.skipped}`,
+      // Each request handles one batch; keep going until the mailbox is caught up.
+      let hasMore = true;
+      while (hasMore) {
+        const response = await fetch('/api/dmarc/fetch', {
+          method: 'POST',
         });
-      } else {
-        toast.error('Failed to fetch reports', {
-          description: data.error,
-        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          toast.error('Failed to fetch reports', {
+            id: toastId,
+            description: data.error,
+          });
+          return;
+        }
+
+        totals.totalEmails += data.stats.totalEmails;
+        totals.processed += data.stats.processed;
+        totals.skipped += data.stats.skipped;
+        hasMore = data.stats.hasMore;
+
+        if (hasMore) {
+          toast.loading('Fetching reports...', {
+            id: toastId,
+            description: `${totals.totalEmails} emails read, ${data.stats.remaining} remaining`,
+          });
+        }
       }
+
+      toast.success('Reports fetched successfully', {
+        id: toastId,
+        description: `Processed: ${totals.processed}, Skipped: ${totals.skipped}`,
+      });
     } catch (error) {
       toast.error('Error fetching reports', {
+        id: toastId,
         description: error instanceof Error ? error.message : 'Unknown error',
       });
     } finally {

@@ -1,6 +1,6 @@
 import { initializeApp as initializeClientApp, getApps as getClientApps } from 'firebase/app';
-import { getFirestore as getClientFirestore, collection, doc, getDoc, setDoc, getDocs, deleteDoc, query, where, orderBy, Timestamp } from 'firebase/firestore';
-import { ParsedDmarcReport } from './types';
+import { getFirestore as getClientFirestore, collection, doc, getDoc, setDoc, getDocs, deleteDoc, query, where, orderBy, Timestamp, writeBatch } from 'firebase/firestore';
+import { GmailCursor, ParsedDmarcReport } from './types';
 import { getEnvironment } from '../config/environment';
 
 // Use client-side Firebase for simplicity
@@ -73,6 +73,61 @@ export class DmarcFirestoreService {
       console.error('Error saving report to Firestore:', error);
       throw error;
     }
+  }
+
+  /**
+   * Save the reports that are not already stored, in one batched write.
+   * Existence checks run in parallel rather than one round trip per report.
+   */
+  async saveNewReports(reports: ParsedDmarcReport[]): Promise<{ saved: number; skipped: number }> {
+    // A report can arrive twice in one batch (e.g. a resent email); keep the first.
+    const unique = [...new Map(reports.map((r) => [String(r.id), r])).values()];
+    const exists = await Promise.all(unique.map((r) => this.reportExists(r.id)));
+    const fresh = unique.filter((_, i) => !exists[i]);
+
+    const db = getFirestoreDB();
+    // Firestore caps a batch at 500 writes.
+    for (let i = 0; i < fresh.length; i += 500) {
+      const batch = writeBatch(db);
+      for (const report of fresh.slice(i, i + 500)) {
+        const docId = String(report.id);
+        batch.set(
+          doc(db, this.reportsCollection, docId),
+          this.removeUndefined({
+            ...report,
+            id: docId,
+            processedAt: Timestamp.fromDate(report.processedAt),
+          }) as Record<string, unknown>
+        );
+      }
+      await batch.commit();
+    }
+
+    return { saved: fresh.length, skipped: reports.length - fresh.length };
+  }
+
+  /**
+   * Get the Gmail cursor: the last IMAP UID ingested.
+   */
+  async getCursor(): Promise<GmailCursor | null> {
+    const db = getFirestoreDB();
+    const docSnap = await getDoc(doc(db, this.configCollection, 'cursor'));
+    if (!docSnap.exists()) {
+      return null;
+    }
+    const data = docSnap.data();
+    return { uidValidity: data.uidValidity, lastUid: data.lastUid };
+  }
+
+  /**
+   * Advance the Gmail cursor.
+   */
+  async saveCursor(cursor: GmailCursor): Promise<void> {
+    const db = getFirestoreDB();
+    await setDoc(doc(db, this.configCollection, 'cursor'), {
+      ...cursor,
+      updatedAt: Timestamp.now(),
+    });
   }
 
   /**
