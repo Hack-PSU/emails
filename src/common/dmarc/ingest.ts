@@ -14,7 +14,7 @@ export interface DmarcBatchResult {
   processed: number;
   skipped: number;
   errors: number;
-  /** Labelled emails still waiting after this batch. */
+  /** Candidate emails still waiting after this batch. */
   remaining: number;
   hasMore: boolean;
 }

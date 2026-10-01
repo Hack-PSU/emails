@@ -12,7 +12,7 @@ export class GmailService {
   }
 
   /**
-   * Fetch the next batch of labelled emails newer than the cursor.
+   * Fetch the next batch of candidate report emails newer than the cursor.
    *
    * Only messages with a UID above `afterUid` are downloaded, so a run costs
    * the new mail rather than the whole label. UIDs are only comparable within
@@ -36,8 +36,9 @@ export class GmailService {
     });
 
     try {
+      const mailbox = await this.findAllMailBox(imap);
       const box = await new Promise<Imap.Box>((resolve, reject) => {
-        imap.openBox('INBOX', true, (err, box) => (err ? reject(err) : resolve(box)));
+        imap.openBox(mailbox, true, (err, box) => (err ? reject(err) : resolve(box)));
       });
 
       const uidValidity = box.uidvalidity;
@@ -45,7 +46,7 @@ export class GmailService {
 
       const uids = await new Promise<number[]>((resolve, reject) => {
         imap.search(
-          [['X-GM-LABELS', this.config.label], ['UID', `${afterUid + 1}:*`]],
+          [['X-GM-RAW', this.searchQuery()], ['UID', `${afterUid + 1}:*`]],
           (err, results) => (err ? reject(err) : resolve(results ?? []))
         );
       });
@@ -119,6 +120,46 @@ export class GmailService {
     } finally {
       imap.end();
     }
+  }
+
+  /**
+   * Gmail query for mail that could hold a report: anything under the label,
+   * plus any message with a report-shaped attachment, so reports that a filter
+   * archived or never labelled are still found. Non-reports that match are
+   * dropped later by the attachment and XML checks.
+   */
+  private searchQuery(): string {
+    // Gmail search spells spaces in label names as hyphens.
+    const label = this.config.label.replace(/\s+/g, '-');
+    return `label:${label} OR (has:attachment (filename:zip OR filename:gz OR filename:xml))`;
+  }
+
+  /**
+   * Resolve the All Mail folder by its \All special-use flag, since its name is
+   * localised ("[Gmail]/All Mail", "[Google Mail]/All Mail", ...).
+   * Searching INBOX alone misses archived reports.
+   */
+  private async findAllMailBox(imap: Imap): Promise<string> {
+    const boxes = await new Promise<Imap.MailBoxes>((resolve, reject) => {
+      imap.getBoxes((err, boxes) => (err ? reject(err) : resolve(boxes)));
+    });
+
+    const search = (tree: Imap.MailBoxes, prefix: string): string | null => {
+      for (const [name, box] of Object.entries(tree)) {
+        const path = prefix + name;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((box as any).special_use_attrib === '\\All') {
+          return path;
+        }
+        if (box.children) {
+          const found = search(box.children, path + box.delimiter);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    return search(boxes, '') ?? '[Gmail]/All Mail';
   }
 
   /**

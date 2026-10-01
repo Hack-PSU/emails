@@ -109,6 +109,6 @@ export interface GmailBatch {
   uidValidity: number;
   /** Highest UID covered by this batch; the next cursor. */
   lastUid: number;
-  /** Labelled messages still pending after this batch. */
+  /** Candidate messages still pending after this batch. */
   remaining: number;
 }
