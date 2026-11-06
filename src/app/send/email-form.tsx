@@ -183,6 +183,13 @@ const TEMPLATE_CONFIGS: TemplateConfig[] = [
     defaultFrom: "team@hackpsu.org",
     fields: [],
   },
+  {
+    id: "thank-you-email",
+    label: "Thank You Email",
+    defaultSubject: "Thanks for hacking with us! See you back in Hacky Valley",
+    defaultFrom: "team@hackpsu.org",
+    fields: [],
+  }
 ];
 
 /* ----------------------- TYPES & HELPERS ----------------------- */
